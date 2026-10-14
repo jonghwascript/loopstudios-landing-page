@@ -176,7 +176,11 @@
 // Interactive Section
 // ------------------------------------------
 .c-interactive {
+  @include mq('tablet') {
+    --gutter-inline: 80px;
+  }
   &__image {
+    width: 100%;
     max-inline-size: 100%;
     block-size: auto;
   }
@@ -194,6 +198,7 @@
     font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem); //32 ~ 48px
     line-height: 100%;
     text-align: center;
+    text-transform: uppercase;
   }
   &__description {
     font-family: $font-family-body;
@@ -208,13 +213,18 @@
 // ------------------------------------------
 
 .c-creations {
+  padding-inline: 24px;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(3, auto);
 
+  @include mq('tablet') {
+    padding-inline: 80px;
+  }
+
   &__title {
     font-family: $font-family-title;
-    font-size: $font-size-preset4;
+    font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem);
     color: $bg-black;
   }
 
@@ -236,6 +246,11 @@
   &__list {
     margin-block-start: 32px;
     grid-template-columns: 1fr;
+
+    @include mq('tablet') {
+      grid-template-rows: repeat(8, 120px);
+      row-gap: 24px;
+    }
   }
 
   &__item {
@@ -252,8 +267,14 @@
   }
 
   &__image {
+    width: 100%;
     max-inline-size: 100%;
-    height: auto;
+    height: 120px;
+    object-fit: cover;
+
+    @include mq('tablet') {
+      object-position: top center;
+    }
   }
 
   &__card-title {
@@ -279,18 +300,47 @@
   &__outer {
     --gutter-inline: 56px;
     padding-block: var(--gutter-inline);
+
+    @include mq('tablet') {
+      --gutter-inline: 80px;
+      padding-block: 43.5px;
+      grid-template-columns: var(--gutter-inline) repeat(2, minmax(0,1fr)) var(
+          --gutter-inline
+        );
+      grid-template-rows: repeat(2, auto);
+      row-gap: 24px;
+    }
   }
 
   &__logo {
     justify-self: center;
+
+    @include mq('tablet') {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+      justify-self: start;
+    }
   }
 
   &__navigations {
     margin-block-start: 40px;
+    @include mq('tablet') {
+      margin-block-start: 0;
+      grid-column: 2 / 4;
+      grid-row: 2 / 3;
+      justify-self: start;
+      align-items: center;
+    }
   }
 
   &__social {
     margin-block-start: 40px;
+    @include mq('tablet') {
+      margin-block-start: 0;
+      grid-column: 3 / 4;
+      grid-row: 1 / 2;
+      justify-self: end;
+    }
   }
 
   &__copyright {
@@ -298,18 +348,29 @@
     font-family: $font-family-body;
     font-size: $font-size-preset6;
     color: $bg-white;
+    @include mq('tablet') {
+      margin-block-start: 0;
+      grid-column: 2 / 4;
+      grid-row: 2 / 3;
+      justify-self: end;
+      align-items: center;
+    }
   }
 
   .c-navigation {
     &__links {
       --space: 16px;
       align-items: center;
+      @include mq('tablet') {
+        flex-direction: row;
+      }
     }
     &__link {
       a {
         font-family: $font-family-body;
         font-size: $font-size-preset6;
         color: $bg-white;
+        text-transform: none;
       }
     }
   }
@@ -321,5 +382,5 @@
   color: $grey-200;
 }
 .attribution a {
-  color: $bg-white
+  color: $bg-white;
 }
