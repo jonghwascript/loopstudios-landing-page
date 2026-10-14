@@ -226,3 +226,57 @@ JS 구현 후 확인할 항목:
 | 모션 줄이기 환경 (Chromium 320px) | 검증 완료 (미적용 확인) |
 | Firefox | 미검증 (Playwright Firefox 미설치) |
 | 실제 버튼 조작, 터치, 스크린 리더 | 미검증 (스크립트 없음) |
+
+## 접근성 체크리스트 점검 (2026-10-14)
+
+- 기준: [a11y-checklist.md](a11y-checklist.md) (The A11Y Project, WCAG 2.2 A·AA 요약)
+- 대상: 커밋 `38cca56` 시점의 [index.html](../src/pages/index.html), [_home.scss](../src/scss/pages/_home.scss) 등 SCSS 전체
+- 방식: 소스 대조 + Chromium(Playwright) 측정. SCSS는 scratchpad에 별도로 컴파일했고 `dist`는 사용하지 않았습니다.
+- 체크리스트를 모두 지켜도 완전한 접근성을 보장하지는 않습니다.
+
+### 발견 사항
+
+| # | 중요도 | 체크리스트 항목 | 위치 | 근거 | 개선 방향 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 높음 | 보이지 않는데 포커스를 받는 요소 제거 / 가로 스크롤 없애기 | `.c-navigation__outer` | 1024·1440px에서 헤더 메뉴 링크 5개가 화면 오른쪽 밖에서 포커스를 받음. 문서 폭 1176/1592px | `__outer`에 데스크톱 복원 규칙(`transform: none` 등) 추가 |
+| 2 | 높음 | 텍스트 200% 확대 / 가로 스크롤 없애기 (WCAG 1.4.4, 1.4.10) | `.c-hero__text` | 320px에서 문서 폭 361px, 375px + 루트 글꼴 200%에서 639px. `h1`이 넘침 | `clamp()` 최소값 축소, 좁은 화면 패딩 축소 |
+| 3 | 중간 | 모든 애니메이션이 `prefers-reduced-motion`을 따름 | `.c-navigation__outer`, `.c-header__navigation` | 모션 줄이기 환경에서도 패널 transition `0.3s`. 건너뛰기 링크는 통과 | 두 선택자의 `transition`을 모션 줄이기에서 `none`으로 |
+| 4 | 중간 | 이미지 위에 겹친 텍스트 확인 | `.c-creations__card-title` | 흰 글자가 밝은 이미지(Night Arcade, The Curiosity, Make It Fisheye) 위에 오버레이 없이 놓임(육안 확인) | 어두운 그라데이션 오버레이(`$bg-gradient`) 추가 |
+| 5 | 중간 | `button`·`a` 내용은 고유하고 설명적으로 | `.c-creations__see-all` | 링크 텍스트가 "SEE ALL"뿐 | `SEE ALL<span class="u-sr-only"> creations</span>` |
+| 6 | 중간 | 버튼과 링크를 쉽게 누를 수 있게 | `.c-header__button`, Twitter 링크 | 각각 24×16px, 24×20px. 주변 컨트롤이 없어 WCAG 2.5.8 간격 예외로 AA는 통과 가능성 큼(미측정) | 버튼 패딩으로 44×44px 권장 |
+| 7 | 낮음 | 포커스 스타일 대비 | `_base.scss` `button:focus-visible` | 보라색 히어로 이미지 위 `3px solid blue`. 보이지만 대비가 낮음(육안 확인) | 이미지 위 버튼은 흰색 outline |
+| 8 | 낮음 | 장식 이미지는 빈 `alt` | 메뉴 패널 로고 | 열린 메뉴에서 "Loopstudios" 이미지가 두 번 읽힘 | 패널 로고 `alt=""` |
+| 9 | 낮음 | 포커스 순서 / 보이지 않는 포커스 | 열린 메뉴 | 메뉴를 지나면 패널 뒤 가려진 링크로 포커스가 감 | JS 구현 시 `inert` 처리 (위 "모바일 메뉴 슬라이드 패널" 체크리스트) |
+| 10 | 낮음 | 쉬운 표현 / 링크 목적지 | HTML 텍스트 | "OUR CREATIONS", "SEE ALL", 카드 제목이 대문자로 입력됨. 모든 링크 목적지가 `href="#"` | 대문자 표기 방침 결정, 목적지 확정 후 교체 |
+
+1·3·8·9번은 위 "모바일 메뉴 슬라이드 패널" 섹션의 미해결 항목과 같은 문제입니다. 메뉴 열기·닫기는 `main.js` 미구현으로 아직 동작하지 않습니다.
+
+### 통과한 항목
+
+| 분류 | 확인 결과 |
+| --- | --- |
+| 전역 코드 | `lang="en"`, 고유한 `title`, 확대를 막지 않는 viewport. `autofocus`, `title` 툴팁, 양수 `tabindex` 없음 |
+| 랜드마크 | banner, main, contentinfo, `navigation "Footer"`. `<footer>`가 `div.c-container` 안에 있어도 contentinfo로 인식됨 |
+| 제목 | `h1` 1개, `h1 → h2 → h3` 순서로 건너뛰지 않음 |
+| 이미지 | 모든 `img`에 `alt`, 장식 이미지는 `alt=""`, 아이콘 SVG는 `aria-hidden` |
+| 목록 | 메뉴, 카드, SNS를 `ul`로 마크업 |
+| 컨트롤 | 이동은 `a`, 실행은 `button`. 건너뛰기 링크가 포커스 시 나타나고 `#main`으로 이동. 새 창 링크 없음 |
+| 포커스 표시 | 375px에서 Tab으로 이동한 22개 요소 모두 outline 있음. 검은 푸터 위 SNS 링크도 흰 링이 보임 |
+| 링크 구분 | attribution 링크에 밑줄 |
+| 색 대비 (단색 배경) | attribution 14.73:1, 푸터 텍스트·링크 21:1, 본문 15.91:1, 섹션 제목·SEE ALL 21:1 |
+| 가로 넘침 | 375 / 768 / 1023px에서 없음 |
+| 닫힌 모바일 메뉴 | 접근성 트리와 Tab 순서에서 빠짐 |
+
+### 해당 없음
+
+표, 폼, 미디어, 비디오, 오디오 분류는 페이지에 해당 요소가 없습니다. 세션 타임아웃, 배경 영상, 사용자 정의 `::selection`도 없습니다.
+
+### 검증 상태
+
+| 항목 | 상태 |
+| --- | --- |
+| 랜드마크, 제목, Tab 순서, 포커스 outline, 클릭 영역, 가로 넘침(320–1440px), 루트 글꼴 200%, 단색 배경 대비 (Chromium) | 검증 완료 |
+| 이미지 위 글자 대비, 포커스 링 대비 | 육안 확인만, 수치 미측정 |
+| HTML 유효성 검사 | 미검증 (검사 도구 없음) |
+| 브라우저 텍스트 전용 200% 확대 | 미검증 (루트 글꼴 200%로 대체 측정) |
+| 고대비 모드(강제 색상), 실제 스크린 리더, 화면 회전, Firefox | 미검증 |
