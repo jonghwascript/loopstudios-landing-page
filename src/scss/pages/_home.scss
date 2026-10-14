@@ -15,6 +15,10 @@
   justify-content: space-between; //로고와 햄버거 버튼의 위치(데스크탑은 바뀌어야함)
   align-items: center;
 
+  @include mq('tablet'){
+    inset: 40px 80px auto; //높이 40px, 양쪽 80px
+  }
+
   &__logo {
     width: clamp(9rem, calc(6.137rem + 12.214vw), 12rem); //144 - 192px
     height: clamp(1.5rem, calc(1.023rem + 2.036vw), 2rem); //24 - 32px
@@ -137,6 +141,10 @@
 // Hero Section
 // ------------------------------------------
 .c-hero {
+
+  @include mq('tablet'){
+    --gutter-inline: 80px;
+  }
   .c-hero__picture {
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
 
@@ -295,20 +303,32 @@
 // Footer
 // ------------------------------------------
 .c-footer {
+  padding: 56px;
   background-color: $bg-black;
 
+  @include mq('tablet'){
+    padding-block: 43.5px;
+    padding-inline: 80px;
+  }
+
   &__outer {
-    --gutter-inline: 56px;
+    display: grid;
+    grid-template-columns: 1fr;
     padding-block: var(--gutter-inline);
 
     @include mq('tablet') {
-      --gutter-inline: 80px;
-      padding-block: 43.5px;
-      grid-template-columns: var(--gutter-inline) repeat(2, minmax(0,1fr)) var(
-          --gutter-inline
-        );
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-rows: repeat(2, auto);
+      grid-template-areas:
+        'logo social'
+        'navigations copyright';
       row-gap: 24px;
+
+      @each $grid in [logo, social, navigations, copyright] {
+        .c-footer__#{$grid} {
+          grid-area: $grid;
+        }
+      }
     }
   }
 
@@ -316,8 +336,6 @@
     justify-self: center;
 
     @include mq('tablet') {
-      grid-column: 2 / 3;
-      grid-row: 1 / 2;
       justify-self: start;
     }
   }
@@ -326,8 +344,6 @@
     margin-block-start: 40px;
     @include mq('tablet') {
       margin-block-start: 0;
-      grid-column: 2 / 4;
-      grid-row: 2 / 3;
       justify-self: start;
       align-items: center;
     }
@@ -337,8 +353,6 @@
     margin-block-start: 40px;
     @include mq('tablet') {
       margin-block-start: 0;
-      grid-column: 3 / 4;
-      grid-row: 1 / 2;
       justify-self: end;
     }
   }
@@ -347,10 +361,13 @@
     margin-block-start: 16px;
     font-family: $font-family-body;
     font-size: $font-size-preset6;
+    line-height: 165%;
+    letter-spacing: 0;
     color: $bg-white;
+    text-align: center;
     @include mq('tablet') {
       margin-block-start: 0;
-      grid-column: 2 / 4;
+      grid-column: 2 / 3;
       grid-row: 2 / 3;
       justify-self: end;
       align-items: center;
