@@ -2,15 +2,14 @@
 
 $font-primary: 'Roboto', sans-serif;
 
-$font-size-preset1: 56px;
-$font-size-preset2: 16px;
-$font-size-preset3: 12px;
+$font-size-preset1: 72px;
+$font-size-preset2: 48px;
+$font-size-preset3: 40px;
+$font-size-preset4: 32px;
+$font-size-preset5: 24px;
+$font-size-preset6: 15px;
+$font-size-preset7: 14px;
 
-$grey-100: #e7eaee;
-$grey-200: #cfcfcf;
-$grey-300: #a3aab4;
-$grey-400: #676d7e;
-$grey-500: #48556a;
 
 $bg-white: #ffffff;
 $bg-gray: #949494;
@@ -18,10 +17,18 @@ $bg-blue-800: #242742;
 $bg-blue-700: #36384d;
 $bg-red: #ff6155;
 
+//------------------------------------------------------
+// Current Project
+//-------------------------------------------------------
+$grey-200: #d8d8d8;
+$blue-100: #e5eaf1;
+$blue-50: #f6faff;
+
 $bg-gradient: linear-gradient(
-  0deg,
-  rgba(255, 106, 58, 1) 0%,
-  rgba(255, 82, 123, 1) 100%
+  to bottom,
+  rgba(0, 0, 0, 0) 0%,
+  rgba(0, 0, 0, 0.6) 60%,
+  rgba(0, 0, 0, 0.7) 100%
 );
 
 // 🌟 새 챌린지를 시작할 때 README의 "Layout" 섹션 값으로 아래 두 숫자만 교체하면 된다.
@@ -30,3 +37,6 @@ $breakpoints: (
   'tablet': 768px,
   'desktop': 1024px,
 );
+
+$font-family-title: 'Josefin Sans', sans-serif;
+$font-family-body: "Alata", sans-serif;
