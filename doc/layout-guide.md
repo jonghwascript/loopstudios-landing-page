@@ -99,6 +99,31 @@
 </main>
 ```
 
+## .l-content-grid
+
+역할: 요소 자체는 전체 폭을 유지하고, 직계 자식만 가운데 콘텐츠 열에 배치하는 Grid입니다. 섹션 배경은 화면 끝까지 채우고 내용만 폭을 제한할 때 사용합니다. `.l-center`는 요소 자체의 폭을 줄이므로 그 요소의 배경도 함께 좁아집니다. 이 차이가 두 클래스를 고르는 기준입니다.
+
+- 열 구성: `[full-start] 여백 [content-start] 콘텐츠 [content-end] 여백 [full-end]`
+- 콘텐츠 열 최대 너비: `--content-max`, 없으면 `69.375rem`(1110px). 화면이 좁으면 양쪽 여백을 뺀 너비로 줄어듭니다.
+- 양쪽 최소 여백: `--gutter-inline`, 없으면 `--s1`, 둘 다 없으면 `1.5rem`. `.l-center`와 같은 변수입니다.
+- 직계 자식은 모두 `content` 열에 배치됩니다. 손자 요소에는 적용되지 않습니다.
+
+| 옵션 | 동작 |
+| --- | --- |
+| `data-full` | 직계 자식에 지정하면 그 자식만 `full` 열(화면 끝에서 끝)에 배치 |
+
+다른 `l-` 클래스의 옵션과 달리 `data-full`은 `.l-content-grid` 요소 자신이 아니라 **직계 자식**에 지정합니다.
+
+```html
+<section class="c-hero l-content-grid" style="--content-max: 60rem;">
+  <h1 class="c-hero__title">콘텐츠 열에 배치된 제목</h1>
+  <img class="c-hero__image" data-full src="./images/hero.jpg" alt="" />
+</section>
+```
+
+- 이 클래스는 `display: grid`이므로 자식은 블록 흐름이 아니라 Grid 항목입니다. 자식 사이 간격은 컴포넌트 클래스에서 `row-gap`으로 지정하거나, 콘텐츠를 `.l-stack` 자식 하나로 묶습니다.
+- `.l-content-grid > *`와 컴포넌트 클래스는 명시도가 같습니다. [style.scss](../src/scss/style.scss)에서 레이아웃이 컴포넌트·페이지보다 먼저 로드되므로, 자식의 컴포넌트 클래스에 지정한 `grid-column`이 우선합니다. 데스크톱에서 이미지와 텍스트를 다른 열에 겹쳐 놓는 배치는 이렇게 컴포넌트에서 지정합니다.
+
 ## .l-cluster
 
 역할: 버튼 그룹이나 태그 목록을 가로로 배치하고 공간이 부족하면 줄바꿈합니다. 기본 가로·세로 정렬은 모두 `center`입니다. 간격은 `--space`이며, 클래스에 기본값 `1rem`이 선언되어 있어 부모 레이아웃(`.l-stack` 등)의 `--space`를 상속하지 않습니다. 간격을 바꾸려면 `data-gap` 옵션이나 해당 요소의 인라인 스타일을 사용합니다.
@@ -244,7 +269,7 @@
 
 ## 일반적인 명칭과 실제 구현의 구분
 
-`.l-wrapper`, `.l-inner`, `.l-container`, `.l-row`, `.l-col`, `.l-inline`, `.l-group`, `.l-sidebar`, `.l-main`은 일반적으로 쓰이는 명칭이지만 이 SCSS 파일에는 선언되어 있지 않습니다. 이 파일의 별칭으로 사용할 수 없습니다. 중앙 정렬은 `.l-center`, 격자는 `.l-grid`, 가로 줄바꿈은 `.l-cluster`, 사이드바 구조는 `.l-with-sidebar`를 사용합니다.
+`.l-wrapper`, `.l-inner`, `.l-container`, `.l-row`, `.l-col`, `.l-inline`, `.l-group`, `.l-sidebar`, `.l-main`은 일반적으로 쓰이는 명칭이지만 이 SCSS 파일에는 선언되어 있지 않습니다. 이 파일의 별칭으로 사용할 수 없습니다. 중앙 정렬은 `.l-center`, 전체 폭 배경 안의 콘텐츠 열은 `.l-content-grid`, 격자는 `.l-grid`, 가로 줄바꿈은 `.l-cluster`, 사이드바 구조는 `.l-with-sidebar`를 사용합니다.
 
 # 대표적인 컴포넌트(c-) 종류
 

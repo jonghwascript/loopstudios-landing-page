@@ -183,6 +183,33 @@
 }
 
 // ==========================================
+// The Content Grid (전체 폭 배경 + 가운데 콘텐츠 열)
+// 요소 자체는 전체 폭을 유지하므로 섹션 배경이 잘리지 않는다
+// ==========================================
+.l-content-grid {
+  display: grid;
+  // | 여백(최소 gutter) | ←── 콘텐츠 열(최대 --content-max) ──→ | 여백(최소 gutter) |
+  grid-template-columns:
+    [full-start] minmax(var(--gutter-inline, var(--s1, 1.5rem)), 1fr)
+    [content-start] min(
+      100% - 2 * var(--gutter-inline, var(--s1, 1.5rem)),
+      var(--content-max, 69.375rem)
+    )
+    [content-end] minmax(var(--gutter-inline, var(--s1, 1.5rem)), 1fr)
+    [full-end];
+}
+
+// 직계 자식은 기본으로 콘텐츠 열에 배치
+.l-content-grid > * {
+  grid-column: content;
+}
+
+/* 옵션: 화면 끝까지 쓰는 자식 (전체 폭 이미지 등) */
+.l-content-grid > [data-full] {
+  grid-column: full;
+}
+
+// ==========================================
 // The Cluster (가로 줄바꿈 배치 - 태그, 버튼 그룹용)
 // ==========================================
 .l-cluster {
