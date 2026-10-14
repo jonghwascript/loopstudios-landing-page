@@ -5,3 +5,321 @@
 // 여러 곳에서 재사용하는 스타일은 components/에 둔다.
 // 섹션이 늘어나면 pages/_<섹션>.scss로 나누고 style.scss에 @use를 추가한다.
 // ------------------------------------------
+
+// ------------------------------------------
+// Header
+// ------------------------------------------
+.c-header {
+  position: absolute; //image-hero.jpg 가 아래에 보여야함
+  inset: 40px 24px auto; //높이 40px, 양쪽 24px
+  justify-content: space-between; //로고와 햄버거 버튼의 위치(데스크탑은 바뀌어야함)
+  align-items: center;
+
+  &__logo {
+    width: clamp(9rem, calc(6.137rem + 12.214vw), 12rem); //144 - 192px
+    height: clamp(1.5rem, calc(1.023rem + 2.036vw), 2rem); //24 - 32px
+  }
+
+  &__button {
+    .c-header__hamburger-icon {
+      color: $bg-white;
+      width: clamp(1.5rem, calc(1.023rem + 2.036vw), 2rem); //24 - 32px
+      height: clamp(1rem, calc(0.702rem + 1.272vw), 1.313rem); //16 - 21px
+    }
+
+    @include mq('desktop') {
+      display: none; //데스트탑에서는 보이지 않아야 함
+    }
+  }
+
+  &__navigation {
+    position: fixed;
+    inset: 0; // 뷰포트 전체를 덮어버림
+    overflow-x: hidden; // 패널 자체는 화면 안, 넘치는 안쪽만 잘림
+    overflow-y: auto; // 세로축은 필요할 경우 스크롤이 생김
+    visibility: hidden; // 닫힘: 키보드·스크린 리더 접근 차단
+    transition: visibility 0.3s; //visibility 속성(visible ↔ hidden)이 변경될 때 0.3초 동안 전환 효과를 주겠다
+
+    &.is-open {
+      visibility: visible; //햄버거 버튼을 클릭했을때
+    }
+
+    @include mq('desktop') {
+      position: static;
+      overflow: visible;
+      visibility: visible;
+    }
+  }
+}
+
+.c-navigation {
+  &__outer {
+    --space: 159px;
+    min-block-size: 100%;
+
+    padding-block: 40px;
+    padding-inline: 24px;
+
+    background-color: $bg-black; // 배경을 움직이는 쪽으로 이동
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+
+    .is-open & {
+      transform: none;
+    }
+
+    @include mq('tablet') {
+      --space: 127px;
+    }
+  }
+
+  &__inner {
+    justify-content: space-between;
+    @include mq('desktop') {
+      display: none;
+    }
+  }
+
+  &__close-icon {
+    width: clamp(1.149rem, calc(0.783rem + 1.56vw), 1.532rem);
+    height: auto;
+    aspect-ratio: 1;
+    color: $bg-white;
+  }
+
+  &__links {
+    --space: 24px;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__link {
+    margin: 0;
+    padding: 0;
+    font-family: $font-family-title;
+    font-size: $font-size-preset5;
+    text-transform: uppercase;
+    line-height: 100%;
+    color: $bg-white;
+
+    a {
+      text-decoration: none;
+      color: $bg-white;
+      //접근성
+      &:hover,
+      &:focus-visible {
+        text-decoration: underline;
+        text-underline-offset: 0.25em;
+      }
+      &:focus-visible {
+        outline: 2px solid $bg-white;
+        outline-offset: 3px;
+      }
+    }
+  }
+}
+
+// ------------------------------------------
+// c-container
+// ------------------------------------------
+.c-container {
+  --space: 96px; //main과 footer 수직 간격
+}
+
+// ------------------------------------------
+// Main
+// ------------------------------------------
+.c-main {
+  --space: 96px; //Section 간의 세로 간격
+}
+
+// ------------------------------------------
+// Hero Section
+// ------------------------------------------
+.c-hero {
+  .c-hero__picture {
+    grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
+
+    .c-hero__image {
+      width: 100%;
+      max-inline-size: 100%;
+      block-size: auto;
+    }
+  }
+
+  .c-hero__text {
+    grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
+    align-self: center;
+    justify-self: start;
+    padding-block: 18px;
+    padding-inline: 24px;
+    font-family: $font-family-title;
+    font-size: clamp(2.5rem, calc(9.466px + 8.142vw), 4.5rem);
+    text-transform: uppercase;
+    line-height: 100%;
+    color: $bg-white;
+    border: 2px solid $bg-white;
+
+    @include mq('tablet') {
+      padding-block: 40px;
+      padding-inline: 40px;
+    }
+
+    @include mq('desktop') {
+      padding-block: 42px;
+      padding-inline: 42px;
+    }
+  }
+}
+
+// ------------------------------------------
+// Interactive Section
+// ------------------------------------------
+.c-interactive {
+  &__image {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  &__text {
+    margin-block-start: 48px;
+  }
+
+  &__text-wrapper {
+    --space: clamp(1rem, calc(0.046rem + 4.071vw), 2rem); //16 ~ 32px
+  }
+
+  &__title {
+    font-family: $font-family-title;
+    font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem); //32 ~ 48px
+    line-height: 100%;
+    text-align: center;
+  }
+  &__description {
+    font-family: $font-family-body;
+    font-size: $font-size-preset6;
+    line-height: 165%;
+    text-align: center;
+  }
+}
+
+// ------------------------------------------
+// Creations Section
+// ------------------------------------------
+
+.c-creations {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, auto);
+
+  &__title {
+    font-family: $font-family-title;
+    font-size: $font-size-preset4;
+    color: $bg-black;
+  }
+
+  &__see-all {
+    margin-block-start: 32px;
+    justify-self: center;
+    width: 157px;
+    font-family: $font-family-body;
+    font-size: $font-size-preset7;
+    text-align: center;
+    color: $bg-black;
+    padding-block: 13px;
+    padding-inline: 14.5px;
+    border: 1px solid #000;
+
+    text-decoration: none;
+  }
+
+  &__list {
+    margin-block-start: 32px;
+    grid-template-columns: 1fr;
+  }
+
+  &__item {
+    // anchor-scope: --card-anchor;
+    position: relative;
+  }
+
+  &__link {
+    text-decoration: none;
+  }
+
+  &__picture {
+    // anchor-name: --card-anchor;
+  }
+
+  &__image {
+    max-inline-size: 100%;
+    height: auto;
+  }
+
+  &__card-title {
+    position: absolute;
+    font-family: $font-family-title;
+    font-size: $font-size-preset6;
+    color: $bg-white;
+    left: 20px;
+    bottom: 20px;
+
+    span {
+      display: block;
+    }
+  }
+}
+
+// ------------------------------------------
+// Footer
+// ------------------------------------------
+.c-footer {
+  background-color: $bg-black;
+
+  &__outer {
+    --gutter-inline: 56px;
+    padding-block: var(--gutter-inline);
+  }
+
+  &__logo {
+    justify-self: center;
+  }
+
+  &__navigations {
+    margin-block-start: 40px;
+  }
+
+  &__social {
+    margin-block-start: 40px;
+  }
+
+  &__copyright {
+    margin-block-start: 16px;
+    font-family: $font-family-body;
+    font-size: $font-size-preset6;
+    color: $bg-white;
+  }
+
+  .c-navigation {
+    &__links {
+      --space: 16px;
+      align-items: center;
+    }
+    &__link {
+      a {
+        font-family: $font-family-body;
+        font-size: $font-size-preset6;
+        color: $bg-white;
+      }
+    }
+  }
+}
+
+.attribution {
+  font-size: 0.6875rem;
+  text-align: center;
+  color: $grey-200;
+}
+.attribution a {
+  color: $bg-white
+}
