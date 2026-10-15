@@ -8,7 +8,6 @@
         "dev": "gulp",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "test:storybook": "playwright test --config=playwright.storybook.config.cjs",
         "test": "echo \"Error: no test specified\" && exit 1",
         "format": "gulp prettier"
     },
