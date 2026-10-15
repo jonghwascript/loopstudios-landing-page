@@ -34,6 +34,15 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
   }
 
   &__button {
+    // 터치 영역 44×44px 이상: 패딩만큼 음수 마진을 줘서 아이콘 위치는 그대로 둔다
+    padding: 14px 10px;
+    margin: -14px -10px;
+
+    // 보라색 히어로 이미지 위라 기본 파란 outline은 잘 보이지 않는다
+    &:focus-visible {
+      outline-color: $bg-white;
+    }
+
     .c-header__hamburger-icon {
       color: $bg-white;
       width: clamp(1.5rem, calc(1.023rem + 2.036vw), 2rem); //24 - 32px
@@ -115,6 +124,17 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     justify-content: space-between;
     @include mq('desktop') {
       display: none;
+    }
+  }
+
+  &__close-button {
+    // 터치 영역 44×44px 이상 (아이콘 위치 유지)
+    padding: 13px;
+    margin: -13px;
+
+    // 검은 패널 위라 기본 파란 outline은 잘 보이지 않는다
+    &:focus-visible {
+      outline-color: $bg-white;
     }
   }
 
@@ -393,6 +413,26 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
 
   &__item {
     position: relative;
+
+    // 밝은 이미지 위 흰 제목의 대비를 위한 아래쪽 어두운 그라데이션
+    // 카드 높이가 120px인 모바일·태블릿은 제목이 그라데이션 중간에 걸려
+    // $bg-gradient로는 Night Arcade가 4.5:1 미만이라 더 진하게 한다.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.75) 60%,
+        rgba(0, 0, 0, 0.8) 100%
+      );
+      pointer-events: none;
+
+      @include mq('desktop') {
+        background: $bg-gradient;
+      }
+    }
   }
 
   &__link {
@@ -415,6 +455,7 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
 
   &__card-title {
     position: absolute;
+    z-index: 1; // 그라데이션(::after) 위에 표시
     font-family: $font-family-title;
     font-size: $font-size-preset6;
     text-transform: uppercase;
@@ -483,6 +524,17 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
 
   &__social {
     margin-block-start: 40px;
+
+    // 터치 영역: 아이콘 간격이 16px라 가로는 겹치지 않는 40px, 세로는 44px.
+    // 음수 마진으로 아이콘 위치와 간격은 그대로 둔다(아이콘 24px 기준).
+    a {
+      display: grid;
+      place-items: center;
+      inline-size: 40px;
+      block-size: 44px;
+      margin: -10px -8px;
+    }
+
     @include mq('tablet') {
       margin-block-start: 0;
       justify-self: end;
