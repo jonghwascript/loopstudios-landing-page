@@ -6,7 +6,7 @@
 // 섹션이 늘어나면 pages/_<섹션>.scss로 나누고 style.scss에 @use를 추가한다.
 // ------------------------------------------
 $max-width: 1120px; //데스크탑에서 컨텐츠 최대폭
-$c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
+$c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 
 // ------------------------------------------
 // Header
@@ -158,9 +158,9 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
   }
   // 고정 650px → 최소 650px, 내용이 크면 늘어남
   grid-template-rows: minmax(
-    $c-hreo-height,
+    $c-hero-height,
     auto
-  ); //모바일, 테블릿, 데스크탑 모두 고정 값이다.
+  ); // 모바일·태블릿·데스크톱 공통
   grid-auto-flow: column;
   position: relative;
 
