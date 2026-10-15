@@ -34,6 +34,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   }
 
   &__button {
+    // 버튼과 링크를 쉽게 누를 수 있게
     // 터치 영역 44×44px 이상: 패딩만큼 음수 마진을 줘서 아이콘 위치는 그대로 둔다
     padding: 14px 10px;
     margin: -14px -10px;
@@ -70,7 +71,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   &__inner {
     justify-content: space-between;
     @include mq('desktop') {
-      display: none;
+      display: none;  //데스트탑에서 숨김
     }
   }
 
@@ -108,7 +109,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     padding: 0;
     font-family: $font-family-title;
     font-size: $font-size-preset5;
-    text-transform: uppercase;
+    text-transform: uppercase;  //모바일에서는 대문자
     line-height: 100%;
     color: $bg-white;
 
@@ -200,7 +201,8 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     padding-block: 18px;
     padding-inline: 5px;
     font-family: $font-family-title;
-    font-size: clamp(2.5rem, calc(0.5916rem + 8.142vw), 4.5rem);
+    // 텍스트 200% 확대 / 가로 스크롤 없애기 (WCAG 1.4.4, 1.4.10)
+    font-size: clamp(2.5rem, calc(0.5916rem + 8.142vw), 4.5rem);  // 9.466px → 0.5916rem
     text-transform: uppercase;
     line-height: 100%;
     color: $bg-white;
@@ -421,7 +423,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   //제목색
   &__link:hover .c-creations__card-title,
   &__link:focus-visible .c-creations__card-title {
-    color: $bg-black;
+    color: $bg-black; //그라데이션 위에 검은색
   }
 
   &__link {
