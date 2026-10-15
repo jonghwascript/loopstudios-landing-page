@@ -27,10 +27,11 @@ Users should be able to:
 
 ### Screenshot
 
-![Preview of the Loopstudios landing page](./preview.jpg)
+![Full-page desktop screenshot of the finished Loopstudios landing page at 1440px](./screenshot.jpg)
 
 ### Links
 
+- Challenge URL: [Loopstudios landing page on Frontend Mentor](https://www.frontendmentor.io/challenges/loopstudios-landing-page-N88J5Onjw)
 - Solution URL: [Repository](https://github.com/jonghwascript/loopstudios-landing-page)
 - Live Site URL: [Live site](https://jonghwascript.github.io/loopstudios-landing-page/)
 
