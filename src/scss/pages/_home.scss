@@ -48,75 +48,22 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
       width: clamp(1.5rem, calc(1.023rem + 2.036vw), 2rem); //24 - 32px
       height: clamp(1rem, calc(0.702rem + 1.272vw), 1.313rem); //16 - 21px
     }
-
-    @include mq('desktop') {
-      display: none; //데스트탑에서는 보이지 않아야 함
-    }
+    // 데스크톱 숨김은 .c-nav-panel-toggle (components/_nav-panel.scss)
   }
 
+  // 패널 동작·구조는 components/_nav-panel.scss (.c-nav-panel). 여기서는 겉모양만 정한다.
   &__navigation {
-    position: fixed;
-    inset: 0; // 뷰포트 전체를 덮어버림
-    overflow-x: hidden; // 패널 자체는 화면 안, 넘치는 안쪽만 잘림
-    overflow-y: auto; // 세로축은 필요할 경우 스크롤이 생김
-    visibility: hidden; // 닫힘: 키보드·스크린 리더 접근 차단
-    // 닫을 때: 슬라이드(0.3s)가 끝난 뒤 숨긴다
-    transition: visibility 0s linear 0.3s;
-
-    &.is-open {
-      visibility: visible; //햄버거 버튼을 클릭했을때
-      // 열 때: 지연 없이 바로 보이게 해야 main.js가 닫기 버튼에 포커스를 줄 수 있다
-      transition-delay: 0s;
-    }
-
-    // 분기점을 넘을 때는 슬라이드 없이 바로 바뀌게 한다 (main.js가 잠시 붙였다 뗀다)
-    &.is-resizing,
-    &.is-resizing .c-navigation__outer {
-      transition: none;
-    }
-
-    // 움직임 줄이기: 슬라이드 없이 바로 열고 닫는다 (숨김 지연도 없앤다)
-    @media (prefers-reduced-motion: reduce) {
-      &,
-      .c-navigation__outer {
-        transition: none;
-      }
-    }
-
-    @include mq('desktop') {
-      //데스크탑에서는 네비게이션이보여야 한다.
-      position: static;
-      overflow: visible;
-      visibility: visible;
-    }
+    --nav-panel-bg: #{$bg-black};
+    --nav-panel-padding: 40px 24px;
   }
 }
 
 .c-navigation {
   &__outer {
-    --space: 159px;
-    min-block-size: 100%;
-
-    padding-block: 40px;
-    padding-inline: 24px;
-
-    background-color: $bg-black; // 배경을 움직이는 쪽으로 이동
-    transform: translateX(100%);
-    transition: transform 0.3s ease-out;
-
-    .is-open & {
-      transform: none;
-    }
+    --space: 159px; // 로고 줄과 메뉴 목록 사이
 
     @include mq('tablet') {
       --space: 127px;
-    }
-
-    @include mq('desktop') {
-      padding-block: 0;
-      padding-inline: 0;
-      background-color: transparent;
-      transform: none;
     }
   }
 

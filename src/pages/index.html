@@ -23,7 +23,7 @@
   </head>
   <body>
     <a class="c-skip-link" href="#main">Skip to main content</a>
-    <header class="c-header l-cluster">
+    <header class="c-header l-cluster" data-nav-panel-root>
       <img
         width="192"
         height="32"
@@ -33,7 +33,7 @@
       />
       <button
         type="button"
-        class="c-header__button"
+        class="c-header__button c-nav-panel-toggle"
         data-nav-open
         aria-expanded="false"
         aria-controls="mainNav"
@@ -53,11 +53,12 @@
         <span class="u-sr-only">Open menu</span>
       </button>
       <nav
-        class="c-header__navigation c-navigation"
+        class="c-header__navigation c-navigation c-nav-panel"
         id="mainNav"
         aria-label="Main"
+        data-nav-panel
       >
-        <div class="c-navigation__outer l-stack">
+        <div class="c-navigation__outer c-nav-panel__inner l-stack">
           <div class="c-navigation__inner l-cluster">
             <img
               width="192"
@@ -69,8 +70,8 @@
             <div class="c-navigation__close-wrapper">
               <button
                 type="button"
-                class="c-navigation__close-button"
-                data-nav-close=""
+                class="c-navigation__close-button c-nav-panel__close"
+                data-nav-close
                 aria-label="Close menu"
               >
                 <svg
@@ -385,6 +386,6 @@
         </div>
       </footer>
     </div>
-    <script src="./js/main.js" defer></script>
+    <script type="module" src="./js/main.js"></script>
   </body>
 </html>
