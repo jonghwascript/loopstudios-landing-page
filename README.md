@@ -1,107 +1,228 @@
-# Frontend Mentor - Loopstudios landing page
+# Frontend Mentor - Loopstudios landing page solution
 
-![Design preview for the Loopstudios landing page coding challenge](preview.jpg)
+This is a solution to the Loopstudios landing page challenge on Frontend Mentor. Frontend Mentor challenges help you improve your coding skills by building realistic projects.
 
-## Welcome! 👋
+## Table of contents
 
-Thanks for checking out this front-end coding challenge.
+- Overview
+  - The challenge
+  - Screenshot
+  - Links
+- My process
+  - Built with
+  - What I learned
+  - Continued development
+  - Useful resources
+  - AI Collaboration
+- Author
 
-[Frontend Mentor](https://www.frontendmentor.io) challenges help you improve your coding skills by building realistic projects.
+## Overview
 
-**To do this challenge, you need a good understanding of HTML and CSS and a basic understanding of JavaScript.**
+### The challenge
 
-## The challenge
-
-Your challenge is to build out this landing page and get it looking as close to the design as possible.
-
-This challenge focuses mostly on HTML & CSS. There's a tiny bit of JS included for the mobile navigation toggle. But you could also choose to do this without JS!
-
-You can use any tools you like to help you complete the challenge. So if you've got something you'd like to practice, feel free to give it a go.
-
-Your users should be able to:
+Users should be able to:
 
 - View the optimal layout for the site depending on their device's screen size
 - See hover states for all interactive elements on the page
 
-### Want some support on the challenge? 
+### Screenshot
 
-[Join our community](https://www.frontendmentor.io/community) and ask questions in the **#help** channel.
+![Preview of the Loopstudios landing page](./preview.jpg)
 
-## Where to find everything
+### Links
 
-Your task is to build out the project to the designs inside the `/design` folder. You will find both a mobile and a desktop version of the design. 
+- Solution URL: [Repository](https://github.com/jonghwascript/loopstudios-landing-page)
+- Live Site URL: [Live site](https://jonghwascript.github.io/loopstudios-landing-page/)
 
-The designs are in JPG static format. Using JPGs will mean that you'll need to use your best judgment for styles such as `font-size`, `padding` and `margin`. 
+## My process
 
-If you would like the Figma design file to inspect the design in more detail, you can [subscribe as a PRO member](https://www.frontendmentor.io/pro).
+### Built with
 
-You will find all the required assets in the `/images` folder. The assets are already optimized.
+- Semantic HTML5 markup
+- SCSS with BEM-style class names (`c-` components, `l-` layouts, `u-` utilities)
+- CSS custom properties
+- Flexbox and CSS Grid
+- Mobile-first workflow with `em`-based media queries
+- Vanilla JavaScript (ES modules)
 
-There is also a `style-guide.md` file containing the information you'll need, such as color palette and fonts.
+### What I learned
 
-## Using AI coding assistants
+#### 1. Semantic HTML and accessible names
 
-We've included two files to help you if you're using AI coding assistants (like Claude, GitHub Copilot, Cursor, etc.) while working on this challenge:
+- The site `<header>` only becomes a `banner` landmark when it is not inside `<main>`, so the header sits before `<main>` and the hero image is handled in CSS.
+- `<picture>` sources follow the mobile-first SCSS: the desktop image uses `media="(min-width: 64em)"`, not `max-width`.
+- Text in the markup is written in normal case and uppercased with `text-transform`. Screen readers, copied text, and reader modes get "Our creations" instead of "OUR CREATIONS".
+- Card titles split into two lines with `<span>`s need a space between them. Without it, the link name is computed as "DEEPEARTH".
+- A link that only says "See all" gets visually hidden context, so it still makes sense in a list of links:
 
-- `AGENTS.md` - Contains detailed instructions for AI assistants on how to help you with this challenge. It's tailored to this challenge's difficulty level, so the AI will provide guidance appropriate to your learning stage—offering more support for beginner challenges and encouraging more independence on advanced ones.
-- `CLAUDE.md` - A pointer file that directs Claude-based tools to the AGENTS.md instructions.
+```html
+<a class="c-creations__see-all" href="#"
+  >See all<span class="u-sr-only"> creations</span></a
+>
+```
 
-**How to use them:** You don't need to do anything! These files are automatically detected by most AI coding tools. The AI will read them and adjust its behavior to be a better learning partner—guiding you toward solutions rather than just giving you the answers.
+- The logo in the open menu panel repeats the header logo, so it uses `alt=""` to avoid being announced twice.
+- A skip link is the first element in `<body>` and becomes visible on focus.
 
-**Note:** These files are designed to help you *learn*, not to do the work for you. The AI is instructed to ask questions, give hints, and explain concepts rather than writing complete solutions.
+#### 2. A mobile menu panel without horizontal scroll
 
-## Building your project
+My first attempt moved the whole fixed panel off-screen with `transform: translateX(100%)`. That created about 300px of horizontal scroll at 375px. A `position: fixed` element that overflows the viewport is still part of the scrollable area, and `overflow-x: hidden` on `html` or `body` does not clip it.
 
-Feel free to use any workflow that you feel comfortable with. Below is a suggested process, but do not feel like you need to follow these steps:
+The fix was to split the panel into a frame that stays inside the viewport and an inner part that slides:
 
-1. Initialize your project as a public repository on [GitHub](https://github.com/). Creating a repo will make it easier to share your code with the community if you need help. If you're not sure how to do this, [have a read-through of this Try Git resource](https://try.github.io/).
-2. Configure your repository to publish your code to a web address. This will also be useful if you need some help during a challenge as you can share the URL for your project with your repo URL. There are a number of ways to do this, and we provide some recommendations below.
-3. Look through the designs to start planning out how you'll tackle the project. This step is crucial to help you think ahead for CSS classes to create reusable styles.
-4. Before adding any styles, structure your content with HTML. Writing your HTML first can help focus your attention on creating well-structured content.
-5. Write out the base styles for your project, including general content styles, such as `font-family` and `font-size`.
-6. Start adding styles to the top of the page and work down. Only move on to the next section once you're happy you've completed the area you're working on.
+```scss
+.c-nav-panel {
+  position: fixed;
+  inset: 0;
+  overflow-x: hidden; // clip the sliding part
+  overflow-y: auto; // let short landscape screens scroll the menu
+  visibility: hidden; // closed: out of the tab order and accessibility tree
+  transition: visibility 0s linear var(--nav-panel-duration, 0.3s);
 
-## Deploying your project
+  &.is-open {
+    visibility: visible;
+    transition-delay: 0s; // visible immediately so focus can move inside
+  }
 
-As mentioned above, there are many ways to host your project for free. Our recommended hosts are:
+  &__inner {
+    min-block-size: 100%;
+    padding: var(--nav-panel-padding, 40px 24px);
+    background-color: var(--nav-panel-bg, #000);
+    transform: translateX(100%);
+    transition: transform var(--nav-panel-duration, 0.3s) ease-out;
+  }
 
-- [GitHub Pages](https://pages.github.com/)
-- [Vercel](https://vercel.com/)
-- [Netlify](https://www.netlify.com/)
+  &.is-open &__inner {
+    transform: none;
+  }
+}
+```
 
-You can host your site using one of these solutions or any of our other trusted providers. [Read more about our recommended and trusted hosts](https://www.frontendmentor.io/guides/hosting-your-solution).
+Other lessons from the panel:
 
-## Create a custom `README.md`
+- The background and padding belong on the moving part. On the frame, the padding let the hero image show through and a strip appeared before the slide.
+- `transform` alone only moves things visually. Closed menu links still received keyboard focus until I added `visibility: hidden`.
+- The delayed `visibility` transition keeps the slide-out animation, and resetting the delay on open lets JavaScript move focus into the panel right away.
+- On desktop, both the frame and the inner part must be reset. I first forgot the inner `transform`, so the desktop links sat just off the right edge, still focusable, and caused horizontal scroll.
 
-We strongly recommend overwriting this `README.md` with a custom one. We've provided a template inside the [`README-template.md`](./README-template.md) file in this starter code.
+#### 3. Menu behavior and focus management in JavaScript
 
-The template provides a guide for what to add. A custom `README` will help you explain your project and reflect on your learnings. Please feel free to edit our template as much as you like.
+The menu logic lives in a reusable `initNavPanel(root, { desktopQuery })` function. It is wired through `data-nav-*` attributes instead of class names, so other projects can reuse it with their own BEM classes.
 
-Once you've added your information to the template, delete this file and rename the `README-template.md` file to `README.md`. That will make it show up as your repository's README file.
+- Opening sets `aria-expanded="true"` and moves focus to the close button with `focus({ preventScroll: true })`. A plain `focus()` scrolled the panel and cancelled the slide.
+- While the menu is open, everything behind the panel is made `inert`, so Tab and screen readers stay inside the menu. The targets are computed from the DOM: the siblings of each ancestor of the panel, up to `<body>`.
 
-## Submitting your solution
+```js
+function collectBackground(panel) {
+  const elements = [];
+  for (let node = panel; node && node !== document.body; node = node.parentElement) {
+    const parent = node.parentElement;
+    if (!parent) break;
+    for (const sibling of parent.children) {
+      if (sibling !== node && !['SCRIPT', 'STYLE', 'TEMPLATE'].includes(sibling.tagName)) {
+        elements.push(sibling);
+      }
+    }
+  }
+  return elements;
+}
+```
 
-Submit your solution on the platform for the rest of the community to see. Follow our ["Complete guide to submitting solutions"](https://www.frontendmentor.io/guides/how-to-submit-solutions) for tips on how to do this.
+- When closing, `inert` has to be removed before focus returns to the hamburger button. An inert button cannot receive focus.
+- `inert` cannot go on the whole `<header>`, because the menu is inside it and a descendant cannot opt out. Moving the menu out of the header would remove it from the `banner` landmark.
+- The menu closes with the close button, `Escape`, or a menu link.
+- If the viewport crosses the desktop breakpoint while the menu is open, the menu resets to closed. An `is-resizing` class turns off transitions for two animation frames so the panel does not visibly slide away.
+- Under `prefers-reduced-motion: reduce`, the panel opens and closes without sliding.
 
-Remember, if you're looking for feedback on your solution, be sure to ask questions when submitting it. The more specific and detailed you are with your questions, the higher the chance you'll get valuable feedback from the community.
+#### 4. Supporting 200% text size
 
-## Sharing your solution
+- The `mq()` mixin converts the px breakpoints to `em`, so breakpoints move when the browser's default font size changes:
 
-There are multiple places you can share your solution:
+```scss
+@media (min-width: math.div(map.get(v.$breakpoints, $device), 16px) * 1em) {
+  @content;
+}
+```
 
-1. Share your solution page in the **#finished-projects** channel of the [community](https://www.frontendmentor.io/community). 
-2. Share on [X (formerly Twitter)](https://x.com/frontendmentor) and mention **@frontendmentor**, including the repo and live URLs in your post. We'd love to take a look at what you've built and help share it around.
-3. Share your solution on [LinkedIn](https://www.linkedin.com/company/frontend-mentor/).
-4. Blog about your experience building your project. Writing about your workflow, technical choices, and talking through your code is a brilliant way to reinforce what you've learned. Great platforms to write on are [dev.to](https://dev.to/), [Hashnode](https://hashnode.com/), and [CodeNewbie](https://community.codenewbie.org/).
+- The hero row uses `minmax(650px, auto)` instead of a fixed height, and the hero `<picture>` uses `contain: size` so the image's intrinsic height (1300px) does not stretch the row.
+- On desktop the hero title is placed in the grid instead of being absolutely positioned. An absolutely positioned title was clipped above the hero at 200% text.
+- The title reserves space for the header with `margin-block: calc(40px + 4rem)`. At 100% it stays centered, and larger text pushes it below the header instead of overlapping it.
+- Long words wrap with `overflow-wrap: anywhere` instead of overflowing at 320px.
 
-We provide templates to help you share your solution once you've submitted it on the platform. Please do edit them and include specific questions when you're looking for feedback. 
+#### 5. Contrast for text over images
 
-The more specific you are with your questions the more likely it is that another member of the community will give you feedback.
+I measured the background pixels behind each piece of text, not just the colors in the design.
 
-## Got feedback for us?
+- White card titles had no overlay and dropped to about 1:1 on light images. A bottom gradient fixed this. On mobile and tablet the cards are only 120px tall, so the titles sit mid-gradient. The design gradient left "Night Arcade" at 3.45:1, so the gradient is stronger below the desktop breakpoint (lowest 5.15:1).
+- On desktop, the white navigation links sat on a bright pink part of the hero image at about 2.8:1. The desktop design has no overlay there, but I added a 40% black overlay on desktop only. That brings the links to 6.71:1 and the large title to at least 3.76:1. Mobile and tablet follow the design without an overlay and still pass.
+- The hero title needs `position: relative; z-index: 1`. Once the `<picture>` is positioned for its overlay, it paints above the title in the same grid cell.
 
-We love receiving feedback! We're always looking to improve our challenges and our platform. So if you have anything you'd like to mention, please email hi[at]frontendmentor[dot]io.
+#### 6. Hover and focus states
 
-This challenge is completely free. Please share it with anyone who will find it useful for practice.
+- A nested SCSS selector compiled to a class that did not exist:
 
-**Have fun building!** 🚀
+```scss
+.c-creations {
+  &__item {
+    // compiles to .c-creations__item__link:hover — matches nothing
+    &__link:hover .c-creations__card-title { color: $bg-black; }
+  }
+}
+```
+
+  The overlay changed on hover, but the white title stayed white on the white overlay. Moving the rule up one level fixed it.
+
+- `:focus-within` and `:focus-visible` behave differently after a mouse click. The overlay used `:focus-within` and the title color used `:focus-visible`. After clicking a card, the link kept focus, so the white overlay stayed while the title turned white again. Both now use the same conditions:
+
+```scss
+&__item {
+  &:hover::after,
+  &:has(.c-creations__link:focus-visible)::after {
+    background: rgba(255, 255, 255, 0.75);
+  }
+}
+
+&__link:hover .c-creations__card-title,
+&__link:focus-visible .c-creations__card-title {
+  color: $bg-black;
+}
+```
+
+- The social links contain only an icon and visually hidden text, so `text-decoration: underline` had nothing visible to draw under. The hover and focus line is a `::after` element instead.
+- Keyboard focus gets the same feedback as hover. For example, SEE ALL inverts on both, plus an offset outline on focus.
+- Small icon buttons get a 44×44px touch area with padding, and the same negative margin keeps the icon in place:
+
+```scss
+&__button {
+  padding: 14px 10px;
+  margin: -14px -10px;
+}
+```
+
+  The social icons are only 16px apart, so their touch areas are 40×44px to avoid overlapping.
+
+### Continued development
+
+- I checked layout, focus order, contrast, and menu behavior in Chromium only. Firefox, real screen readers, Windows high contrast mode, and real touch devices are still unverified.
+- All links are `href="#"` placeholders because the challenge has no real destinations.
+- `hyphens: auto` is set on the hero title, but I did not see hyphens in the browser I tested.
+- The HTML has not been checked with a validator yet.
+
+### Useful resources
+
+- The A11Y Project Checklist - I used it to audit the page against WCAG 2.2 A and AA.
+- Every Layout - The `l-stack`, `l-cluster`, and grid layout classes are based on its patterns.
+
+### AI Collaboration
+
+I used Claude Code as a reviewer and pair programmer.
+
+- **Reviews:** It compared the code against my semantic HTML and accessibility checklists and reported issues with the file location, evidence, and impact.
+- **Measurement:** It ran Playwright scripts in Chromium to measure overflow, focus order, contrast behind text, and behavior at 200% text size. This is how the off-screen desktop menu, the nested selector bug, and the click focus mismatch were found.
+- **Refactoring:** It extracted the mobile menu into a reusable component and compared the new version against the old one to confirm the behavior stayed the same.
+
+What worked well was asking for numbers instead of opinions, for example contrast ratios and element positions. What I still had to do myself was make design decisions, such as where to follow the design and where accessibility should win.
+
+## Author
+
+- Frontend Mentor - @jonghwascript
