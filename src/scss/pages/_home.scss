@@ -5,6 +5,8 @@
 // 여러 곳에서 재사용하는 스타일은 components/에 둔다.
 // 섹션이 늘어나면 pages/_<섹션>.scss로 나누고 style.scss에 @use를 추가한다.
 // ------------------------------------------
+$max-width: 1120px; //데스크탑에서 컨텐츠 최대폭
+$c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
 
 // ------------------------------------------
 // Header
@@ -14,9 +16,16 @@
   inset: 40px 24px auto; //높이 40px, 양쪽 24px
   justify-content: space-between; //로고와 햄버거 버튼의 위치(데스크탑은 바뀌어야함)
   align-items: center;
+  z-index: 999; //c-hero에 가려져서
 
-  @include mq('tablet'){
+  @include mq('tablet') {
     inset: 40px 80px auto; //높이 40px, 양쪽 80px
+  }
+
+  @include mq('desktop') {
+    inset: 64px 80px auto; //높이 40px, 양쪽 80px
+    width: min(100% - 160px, $max-width); // 헤더 좌우 위치값(80px × 2)을 뺀 폭
+    margin: 0 auto;
   }
 
   &__logo {
@@ -66,6 +75,7 @@
     }
 
     @include mq('desktop') {
+      //데스크탑에서는 네비게이션이보여야 한다.
       position: static;
       overflow: visible;
       visibility: visible;
@@ -92,6 +102,13 @@
     @include mq('tablet') {
       --space: 127px;
     }
+
+    @include mq('desktop') {
+      padding-block: 0;
+      padding-inline: 0;
+      background-color: transparent;
+      transform: none;
+    }
   }
 
   &__inner {
@@ -112,6 +129,11 @@
     --space: 24px;
     margin: 0;
     padding: 0;
+
+    @include mq('desktop') {
+      flex-direction: row;
+      gap: 16px;
+    }
   }
 
   &__link {
@@ -122,6 +144,12 @@
     text-transform: uppercase;
     line-height: 100%;
     color: $bg-white;
+
+    @include mq('desktop') {
+      font-family: $font-family-body;
+      font-size: $font-size-preset6;
+      text-transform: none;
+    }
 
     a {
       text-decoration: none;
@@ -158,26 +186,36 @@
 // Hero Section
 // ------------------------------------------
 .c-hero {
-
-  @include mq('tablet'){
+  @include mq('tablet') {
     --gutter-inline: 80px;
   }
-  .c-hero__picture {
+  // 고정 650px → 최소 650px, 내용이 크면 늘어남
+  grid-template-rows: minmax(
+    $c-hreo-height,
+    auto
+  ); //모바일, 테블릿, 데스크탑 모두 고정 값이다.
+  grid-auto-flow: column;
+  position: relative;
+
+  &__picture {
+    // 행 크기를 계산할 때 이미지 원본 높이(1300px)를 무시하게 함
+    // contain: size를 주면 이미지 크기를 무시하고 행 높이에 맞춰 늘어납니다.
+    contain: size;
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
 
     .c-hero__image {
       width: 100%;
-      max-inline-size: 100%;
-      block-size: auto;
+      height: 100%;
+      object-fit: cover;
     }
   }
 
-  .c-hero__text {
+  &__text {
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
     align-self: center;
     justify-self: start;
     padding-block: 18px;
-    padding-inline: 24px;
+    padding-inline: 5px;
     font-family: $font-family-title;
     font-size: clamp(2.5rem, calc(9.466px + 8.142vw), 4.5rem);
     text-transform: uppercase;
@@ -185,14 +223,32 @@
     color: $bg-white;
     border: 2px solid $bg-white;
 
+    overflow-wrap: anywhere; // 들어가지 않는 단어는 중간에서 줄바꿈
+    hyphens: auto; // 지원하는 브라우저에서는 하이픈 표시 (lang="en" 필요)
+
+    // 헤더(absolute, top 40px) 아래 공간을 위아래 같은 크기로 확보한다.
+    // 100%에서는 행(650px) 안에 여유가 있어 가운데 위치가 그대로이고,
+    // 글자를 키우면 제목이 헤더 아래로 밀려 겹치지 않는다. rem이라 헤더와 함께 커진다.
+    margin-block: calc(40px + 4rem);
+
+    @media (min-width: 375px) {
+      padding-inline: 24px; //320px에서는 텍스트가 넘친다
+    }
+
     @include mq('tablet') {
       padding-block: 40px;
       padding-inline: 40px;
     }
 
     @include mq('desktop') {
+      // absolute로 띄우면 행 높이 계산에서 빠져, 글자를 키우면 제목이 히어로 위로 잘린다.
+      // 그리드 안에서 아래쪽에 붙이면 제목이 커질 때 히어로 행(minmax)이 함께 늘어난다.
+      align-self: end;
+      margin-block: calc(64px + 4rem) 146px; // 위: 데스크톱 헤더 top 64px + 헤더 공간
+      width: min(100%, 650px);
       padding-block: 42px;
-      padding-inline: 42px;
+      padding-inline: 40px;
+      justify-self: start;
     }
   }
 }
@@ -204,18 +260,44 @@
   @include mq('tablet') {
     --gutter-inline: 80px;
   }
+
+  &__picture {
+    @include mq('desktop') {
+      grid-column: 2 / 3;
+      grid-row: 1 /2;
+    }
+  }
+
   &__image {
     width: 100%;
-    max-inline-size: 100%;
     block-size: auto;
+    object-fit: cover;
+
+    @include mq('desktop') {
+      max-width: 65.7965%;
+      object-fit: contain;
+    }
   }
 
   &__text {
     margin-block-start: 48px;
+    overflow-wrap: anywhere;
+    @include mq('desktop') {
+      grid-column: 2 / 3;
+      grid-row: 1 /2;
+      align-self: end;
+      justify-self: end;
+      max-width: 48.6948%;
+    }
   }
 
   &__text-wrapper {
     --space: clamp(1rem, calc(0.046rem + 4.071vw), 2rem); //16 ~ 32px
+    @include mq('desktop') {
+      background-color: $bg-white;
+      padding-block-start: 97px;
+      padding-inline-start: 96px;
+    }
   }
 
   &__title {
@@ -224,7 +306,9 @@
     line-height: 100%;
     text-align: center;
     text-transform: uppercase;
+    text-wrap: balance;
   }
+
   &__description {
     font-family: $font-family-body;
     font-size: $font-size-preset6;
@@ -242,9 +326,16 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(3, auto);
-
   @include mq('tablet') {
     padding-inline: 80px;
+  }
+
+  @include mq('desktop') {
+    margin-inline: auto;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      'title title see-all see-all'
+      'list list list list';
   }
 
   &__title {
@@ -252,22 +343,33 @@
     font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem);
     text-transform: uppercase;
     color: $bg-black;
+    overflow-wrap: anywhere;
+
+    @include mq('desktop') {
+      grid-area: title;
+      align-self: center;
+      justify-self: start;
+    }
   }
 
   &__see-all {
     margin-block-start: 32px;
     justify-self: center;
-    width: 157px;
     font-family: $font-family-body;
     font-size: $font-size-preset7;
     text-align: center;
     text-transform: uppercase;
     color: $bg-black;
     padding-block: 13px;
-    padding-inline: 14.5px;
+    padding-inline: 40.5px;
     border: 1px solid #000;
-
     text-decoration: none;
+    @include mq('desktop') {
+      grid-area: see-all;
+      margin-block-start: 0;
+      align-self: center;
+      justify-self: end;
+    }
   }
 
   &__list {
@@ -278,10 +380,18 @@
       grid-template-rows: repeat(8, 120px);
       row-gap: 24px;
     }
+
+    @include mq('desktop') {
+      width: min(100%, $max-width);
+      margin-inline: auto;
+      grid-area: list;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(2, 450px);
+      gap: 32px;
+    }
   }
 
   &__item {
-    // anchor-scope: --card-anchor;
     position: relative;
   }
 
@@ -289,18 +399,17 @@
     text-decoration: none;
   }
 
-  &__picture {
-    // anchor-name: --card-anchor;
-  }
-
   &__image {
     width: 100%;
-    max-inline-size: 100%;
     height: 120px;
     object-fit: cover;
 
     @include mq('tablet') {
       object-position: top center;
+    }
+
+    @include mq('desktop') {
+      height: 100%;
     }
   }
 
@@ -326,7 +435,7 @@
   padding: 56px;
   background-color: $bg-black;
 
-  @include mq('tablet'){
+  @include mq('tablet') {
     padding-block: 43.5px;
     padding-inline: 80px;
   }
@@ -334,7 +443,6 @@
   &__outer {
     display: grid;
     grid-template-columns: 1fr;
-    padding-block: var(--gutter-inline);
 
     @include mq('tablet') {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -349,6 +457,10 @@
           grid-area: $grid;
         }
       }
+    }
+    @include mq('desktop') {
+      width: min(100%, $max-width);
+      margin-inline: auto;
     }
   }
 
@@ -387,8 +499,6 @@
     text-align: center;
     @include mq('tablet') {
       margin-block-start: 0;
-      grid-column: 2 / 3;
-      grid-row: 2 / 3;
       justify-self: end;
       align-items: center;
     }
@@ -414,6 +524,8 @@
 }
 
 .attribution {
+  margin-block-start: 20px;
+
   font-size: 0.6875rem;
   text-align: center;
   color: $grey-200;
