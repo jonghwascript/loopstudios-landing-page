@@ -250,6 +250,7 @@
   &__title {
     font-family: $font-family-title;
     font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem);
+    text-transform: uppercase;
     color: $bg-black;
   }
 
@@ -260,6 +261,7 @@
     font-family: $font-family-body;
     font-size: $font-size-preset7;
     text-align: center;
+    text-transform: uppercase;
     color: $bg-black;
     padding-block: 13px;
     padding-inline: 14.5px;
@@ -306,6 +308,7 @@
     position: absolute;
     font-family: $font-family-title;
     font-size: $font-size-preset6;
+    text-transform: uppercase;
     color: $bg-white;
     left: 20px;
     bottom: 20px;
