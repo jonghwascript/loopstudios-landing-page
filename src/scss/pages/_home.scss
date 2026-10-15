@@ -93,13 +93,13 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
   }
 
   &__links {
-    --space: 24px;
+    --space: 1.5rem;
     margin: 0;
     padding: 0;
 
     @include mq('desktop') {
       flex-direction: row;
-      gap: 16px;
+      gap: 1rem;
     }
   }
 
@@ -125,7 +125,7 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
       &:hover,
       &:focus-visible {
         text-decoration: underline;
-        text-underline-offset: 8px;
+        text-underline-offset: 0.5em; //8px;
       }
       &:focus-visible {
         outline: 2px solid $bg-white;
@@ -200,7 +200,7 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     padding-block: 18px;
     padding-inline: 5px;
     font-family: $font-family-title;
-    font-size: clamp(2.5rem, calc(9.466px + 8.142vw), 4.5rem);
+    font-size: clamp(2.5rem, calc(0.5916rem + 8.142vw), 4.5rem);
     text-transform: uppercase;
     line-height: 100%;
     color: $bg-white;
@@ -214,7 +214,7 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     // 글자를 키우면 제목이 헤더 아래로 밀려 겹치지 않는다. rem이라 헤더와 함께 커진다.
     margin-block: calc(40px + 4rem);
 
-    @media (min-width: 375px) {
+    @media (min-width: 23.4375em) {
       padding-inline: 24px; //320px에서는 텍스트가 넘친다
     }
 
@@ -343,8 +343,8 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     text-align: center;
     text-transform: uppercase;
     color: $bg-black;
-    padding-block: 13px;
-    padding-inline: 40.5px;
+    padding-block: 0.9286em; //13px;
+    padding-inline: 2.8929em; //40.5px;
     border: 1px solid #000;
     text-decoration: none;
     @include mq('desktop') {
@@ -393,14 +393,16 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     // 카드 높이가 120px인 모바일·태블릿은 제목이 그라데이션 중간에 걸려
     // $bg-gradient로는 Night Arcade가 4.5:1 미만이라 더 진하게 한다.
     &::after {
+      font-size: $font-size-preset6; // 그라데이션 길이를 제목 글자 크기에 맞춤
       content: '';
       position: absolute;
       inset: 0;
       background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0.75) 60%,
-        rgba(0, 0, 0, 0.8) 100%
+        to top,
+        rgba(0, 0, 0, 0.8) 0,
+        rgba(0, 0, 0, 0.75) 5em,
+        // 아래 여백 20px + 두 줄 제목을 덮는 높이
+        rgba(0, 0, 0, 0) 8em
       );
       pointer-events: none;
 
@@ -473,7 +475,9 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     grid-template-columns: 1fr;
 
     @include mq('tablet') {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      // 열 폭을 내용에 맞춘다. 반반(1fr)이면 768px에서 메뉴(308px)가 칸(304px)을 넘는다.
+      // 공간이 부족하면(글자 확대) 열이 줄어들고 메뉴·저작권 문구가 칸 안에서 줄바꿈된다.
+      grid-template-columns: repeat(2, auto);
       grid-template-rows: repeat(2, auto);
       grid-template-areas:
         'logo social'
@@ -562,10 +566,11 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
 
   .c-navigation {
     &__links {
-      --space: 16px;
+      --space: 1rem;
       align-items: center;
       @include mq('tablet') {
         flex-direction: row;
+        flex-wrap: wrap; // 글자를 키우면 칸 안에서 줄바꿈 (저작권 문구와 겹치지 않게)
       }
     }
     &__link {
