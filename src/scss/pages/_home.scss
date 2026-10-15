@@ -178,7 +178,7 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
       &:hover,
       &:focus-visible {
         text-decoration: underline;
-        text-underline-offset: 0.25em;
+        text-underline-offset: 8px;
       }
       &:focus-visible {
         outline: 2px solid $bg-white;
@@ -222,6 +222,20 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
     // contain: size를 주면 이미지 크기를 무시하고 행 높이에 맞춰 늘어납니다.
     contain: size;
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
+    position: relative; // 오버레이 기준
+
+    // 이미지 위 검정 40% 채우기: 데스크톱만 적용
+    // - 모바일·태블릿: 시안대로 없음. 없어도 제목 대비 통과
+    // - 데스크톱: 시안에 없지만 흰 메뉴·제목 대비를 위해 적용 (ENGINEERING_NOTES 참고)
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+
+      @include mq('desktop') {
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+    }
 
     .c-hero__image {
       width: 100%;
@@ -232,6 +246,8 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
 
   &__text {
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
+    position: relative; // 위치가 지정된 __picture보다 위에 그린다
+    z-index: 1;
     align-self: center;
     justify-self: start;
     padding-block: 18px;
@@ -390,6 +406,18 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
       align-self: center;
       justify-self: end;
     }
+
+    //접근성
+    &:hover,
+    &:focus-visible {
+      color: $bg-white;
+      background-color: $bg-black;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $bg-black;
+      outline-offset: 3px;
+    }
   }
 
   &__list {
@@ -433,6 +461,18 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
         background: $bg-gradient;
       }
     }
+
+    //카드를 마우스로 클릭한 뒤 흰 오버레이 위에 흰 제목이 남음
+    &:hover::after,
+    &:has(.c-creations__link:focus-visible)::after {
+      background: rgba(255, 255, 255, 0.75);
+    }
+  }
+
+  //제목색
+  &__link:hover .c-creations__card-title,
+  &__link:focus-visible .c-creations__card-title {
+    color: $bg-black;
   }
 
   &__link {
@@ -533,6 +573,23 @@ $c-hreo-height: 650px; //hero 이미지 높이는 항상 고정
       inline-size: 40px;
       block-size: 44px;
       margin: -10px -8px;
+      position: relative;
+
+      //글자가 없어서 text-underline-offset으로 그릴수 없다
+      &::after {
+        content: '';
+        position: absolute;
+        inset-inline: 8px; // 아이콘 폭(24px)에 맞춤
+        inset-block-end: 2px; // 아이콘 아래 간격, 시안에 맞게 조정
+        block-size: 2px;
+        background-color: $bg-white;
+        opacity: 0;
+      }
+
+      &:hover::after,
+      &:focus-visible::after {
+        opacity: 1;
+      }
     }
 
     @include mq('tablet') {
