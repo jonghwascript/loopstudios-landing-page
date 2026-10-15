@@ -148,12 +148,42 @@ function collectBackground(panel) {
 - On desktop the hero title is placed in the grid instead of being absolutely positioned. An absolutely positioned title was clipped above the hero at 200% text.
 - The title reserves space for the header with `margin-block: calc(40px + 4rem)`. At 100% it stays centered, and larger text pushes it below the header instead of overlapping it.
 - Long words wrap with `overflow-wrap: anywhere` instead of overflowing at 320px.
+- Font sizes are in `rem`. My first version used px presets for body text, menus, card titles, and the footer, so only the headings grew when I raised the browser's default font size. Spacing that belongs to a piece of text uses `em`, so it grows with that text:
+
+```scss
+$font-size-preset6: 0.9375rem; // was 15px
+
+&__see-all {
+  font-size: $font-size-preset7; // 0.875rem
+  padding-block: 0.9286em; // 13px at 14px
+  padding-inline: 2.8929em; // 40.5px at 14px
+}
+```
+
+- Fluid sizes keep a `rem` part in the preferred value, such as `clamp(2.5rem, calc(0.5916rem + 8.142vw), 4.5rem)`. A px constant there does not follow the font setting.
+- Borders, outlines, touch targets, and image heights stay in px because they do not depend on text size.
+- At 200% text the footer menu no longer fits in half of the footer. The footer columns size to their content with `repeat(2, auto)`, and the menu wraps with `flex-wrap: wrap` instead of overlapping the copyright line.
 
 #### 5. Contrast for text over images
 
 I measured the background pixels behind each piece of text, not just the colors in the design.
 
-- White card titles had no overlay and dropped to about 1:1 on light images. A bottom gradient fixed this. On mobile and tablet the cards are only 120px tall, so the titles sit mid-gradient. The design gradient left "Night Arcade" at 3.45:1, so the gradient is stronger below the desktop breakpoint (lowest 5.15:1).
+- White card titles had no overlay and dropped to about 1:1 on light images. A bottom gradient fixed this. On mobile and tablet the cards are only 120px tall, so the titles sit mid-gradient. The design gradient left "Night Arcade" at 3.45:1.
+- A percentage-based gradient also failed once the text was larger. At 200% text, the two-line titles reached the transparent top of the gradient and dropped to about 1:1. Below the desktop breakpoint, the gradient stops are now in `em`, based on the title's font size, so the dark area grows with the title:
+
+```scss
+&__item::after {
+  font-size: $font-size-preset6; // same size as the card title
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8) 0,
+    rgba(0, 0, 0, 0.75) 5em,
+    rgba(0, 0, 0, 0) 8em
+  );
+}
+```
+
+  On mobile and tablet the lowest title contrast is now 10.71:1 at 100% text and 10.86:1 at 200% text. Desktop cards are 450px tall and keep the design gradient (lowest 7.46:1, or 7.28:1 at 200% text).
 - On desktop, the white navigation links sat on a bright pink part of the hero image at about 2.8:1. The desktop design has no overlay there, but I added a 40% black overlay on desktop only. That brings the links to 6.71:1 and the large title to at least 3.76:1. Mobile and tablet follow the design without an overlay and still pass.
 - The hero title needs `position: relative; z-index: 1`. Once the `<picture>` is positioned for its overlay, it paints above the title in the same grid cell.
 
