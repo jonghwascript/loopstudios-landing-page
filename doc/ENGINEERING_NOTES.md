@@ -3,7 +3,7 @@
 ## 시맨틱 HTML 리뷰 (2026-10-13)
 
 - 대상: [src/pages/index.html](../src/pages/index.html) 작업본(미커밋)
-- 기준: [semantic-html-guide.md](semantic-html-guide.md), [figma-guide.md](figma-guide.md) §4
+- 기준: [semantic-html-guide.md](semantic-html-guide.md), figma-guide.md §4(이후 삭제됨)
 - 범위: 소스 정적 검토. 빌드·브라우저 검증은 하지 않았습니다(하단 검증 상태 참고).
 - SCSS에는 아직 `c-hero`, `c-creations` 등 컴포넌트 선택자가 없습니다. 클래스 오타는 현재 화면에 영향이 없지만 스타일 작성 시 맞춰야 합니다.
 

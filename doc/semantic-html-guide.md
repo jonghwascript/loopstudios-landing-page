@@ -4,7 +4,6 @@
 
 함께 읽을 문서:
 
-- [figma-guide.md](figma-guide.md) §4: 이 저장소의 HTML 작성 규칙(클래스 접두사, 이미지 크기, placeholder 링크)
 - [a11y-checklist.md](a11y-checklist.md): 접근성 점검 항목
 - [scss-guide.md](scss-guide.md), [layout-guide.md](layout-guide.md): 클래스 이름과 `l-` 배치 클래스
 
@@ -112,7 +111,7 @@ Frontend Mentor의 단일 컴포넌트 챌린지는 화면에 제목이 카드 �
 | `<div>` | 배치·스타일을 위한 묶음 | 위 둘에 해당하지 않는가? |
 
 - 제목이 없는 `<section>`은 대개 `<div>`가 맞습니다.
-- Auto Layout 프레임마다 `section`을 만들지 않습니다([figma-guide.md](figma-guide.md) §5).
+- Auto Layout 프레임마다 `section`을 만들지 않습니다.
 - `<article>` 안에 `<section>`, `<section>` 안에 `<article>` 모두 가능합니다. 예: 후기 영역 `<section>` 안에 후기 카드 `<article>` 여러 개.
 
 ## 6. 텍스트 수준 요소
@@ -173,7 +172,7 @@ Frontend Mentor의 단일 컴포넌트 챌린지는 화면에 제목이 카드 �
 | 현재 페이지에서 **실행**(메뉴 열기, 탭 전환, 수량 변경) | `<button type="button">` |
 | 폼 **제출** | `<button type="submit">` (폼 안의 `button`은 기본값이 `submit`) |
 
-- `href` 없는 `<a>`는 링크가 아닙니다. 키보드 포커스를 받지 못합니다. 목적지를 모르면 `href="#"`로 두고 보고합니다([figma-guide.md](figma-guide.md) §4).
+- `href` 없는 `<a>`는 링크가 아닙니다. 키보드 포커스를 받지 못합니다. 목적지를 모르면 `href="#"`로 두고 보고합니다.
 - `<div onclick>`, `<span onclick>`을 쓰지 않습니다. 키보드 조작, 포커스, 역할을 직접 다시 만들어야 합니다.
 - 인터랙티브 요소 안에 인터랙티브 요소를 넣지 않습니다(`<a>` 안의 `<button>`, `<button>` 안의 `<a>`).
 - 접근 가능한 이름이 있어야 합니다. 아이콘만 있는 버튼은 숨긴 텍스트나 `aria-label`을 붙이고, 아이콘은 `alt=""` 또는 `aria-hidden="true"`로 중복 읽기를 막습니다.
@@ -191,7 +190,7 @@ Frontend Mentor의 단일 컴포넌트 챌린지는 화면에 제목이 카드 �
 
 ## 9. 이미지와 미디어
 
-- 정보 이미지는 내용을 설명하는 `alt`, 장식 이미지는 `alt=""`([figma-guide.md](figma-guide.md) §4). `alt` 속성 자체를 빼면 스크린 리더가 파일 이름을 읽을 수 있습니다.
+- 정보 이미지는 내용을 설명하는 `alt`, 장식 이미지는 `alt=""`. `alt` 속성 자체를 빼면 스크린 리더가 파일 이름을 읽을 수 있습니다.
 - `alt`에 "image of", "picture of"를 넣지 않습니다. 이미지라는 사실은 역할로 이미 전달됩니다.
 - 링크 안의 이미지가 유일한 내용이면 `alt`가 링크 이름이 됩니다. 로고 링크라면 회사 이름을 씁니다.
 - 캡션이 있는 이미지·도표·코드 예시는 `<figure>`와 `<figcaption>`으로 묶습니다.
