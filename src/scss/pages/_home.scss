@@ -42,10 +42,27 @@
     overflow-x: hidden; // 패널 자체는 화면 안, 넘치는 안쪽만 잘림
     overflow-y: auto; // 세로축은 필요할 경우 스크롤이 생김
     visibility: hidden; // 닫힘: 키보드·스크린 리더 접근 차단
-    transition: visibility 0.3s; //visibility 속성(visible ↔ hidden)이 변경될 때 0.3초 동안 전환 효과를 주겠다
+    // 닫을 때: 슬라이드(0.3s)가 끝난 뒤 숨긴다
+    transition: visibility 0s linear 0.3s;
 
     &.is-open {
       visibility: visible; //햄버거 버튼을 클릭했을때
+      // 열 때: 지연 없이 바로 보이게 해야 main.js가 닫기 버튼에 포커스를 줄 수 있다
+      transition-delay: 0s;
+    }
+
+    // 분기점을 넘을 때는 슬라이드 없이 바로 바뀌게 한다 (main.js가 잠시 붙였다 뗀다)
+    &.is-resizing,
+    &.is-resizing .c-navigation__outer {
+      transition: none;
+    }
+
+    // 움직임 줄이기: 슬라이드 없이 바로 열고 닫는다 (숨김 지연도 없앤다)
+    @media (prefers-reduced-motion: reduce) {
+      &,
+      .c-navigation__outer {
+        transition: none;
+      }
     }
 
     @include mq('desktop') {
