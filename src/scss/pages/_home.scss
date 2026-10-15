@@ -161,7 +161,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   grid-template-rows: minmax(
     $c-hero-height,
     auto
-  ); // 모바일·태블릿·데스크톱 공통
+  ); // 모바일·태블릿·데스크탑 공통
   grid-auto-flow: column;
   position: relative;
 
@@ -248,6 +248,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 
   &__picture {
     @include mq('desktop') {
+      // 데스크탑에서는 겹쳐서 보이게
       grid-column: 2 / 3;
       grid-row: 1 /2;
     }
@@ -265,14 +266,16 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   }
 
   &__text {
+    //grid 아이템이라 l-stack 레이아웃 사용하지 않음
     margin-block-start: 48px;
     overflow-wrap: anywhere;
     @include mq('desktop') {
+      // 데스크탑에서는 겹쳐서 보이게
       grid-column: 2 / 3;
       grid-row: 1 /2;
       align-self: end;
       justify-self: end;
-      max-width: 48.6948%;
+      max-width: 48.6948%;  //( 731 / 1111) * 100%
     }
   }
 
@@ -280,8 +283,9 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     --space: clamp(1rem, calc(0.046rem + 4.071vw), 2rem); //16 ~ 32px
     @include mq('desktop') {
       background-color: $bg-white;
-      padding-block-start: 97px;
-      padding-inline-start: 96px;
+      // 1024 화면에서 패딩값이 커서 아래로 내려온다.
+      padding-block-start: clamp(3rem, 5.05vw, 6.0625rem);   //48px ~ 97px
+      padding-inline-start: clamp(3rem, 5vw, 6rem);     //48px ~ 96px
     }
   }
 
@@ -291,6 +295,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     line-height: 100%;
     text-align: center;
     text-transform: uppercase;
+    //화면글꼴을 200% 했을때 줄바꿈 처리
     text-wrap: balance;
   }
 
@@ -317,6 +322,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 
   @include mq('desktop') {
     margin-inline: auto;
+    // 카드 크기인 256px로 지정하면 화면 넓이를 100% 차지 하지 못한다.
     grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-template-areas:
       'title title see-all see-all'
@@ -325,9 +331,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 
   &__title {
     font-family: $font-family-title;
-    font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem);
+    font-size: clamp(2rem, calc(1.046rem + 4.071vw), 3rem); //32px ~ 48px
     text-transform: uppercase;
     color: $bg-black;
+    //화면글꼴을 200% 했을때 강제 줄바꿈 처리
     overflow-wrap: anywhere;
 
     @include mq('desktop') {
@@ -374,6 +381,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     grid-template-columns: 1fr;
 
     @include mq('tablet') {
+      //디자인 시안을 보면 120px 이다. 
       grid-template-rows: repeat(8, 120px);
       row-gap: 24px;
     }
@@ -383,6 +391,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
       margin-inline: auto;
       grid-area: list;
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      //디자인 시안을 보면 450px 이다. 
       grid-template-rows: repeat(2, 450px);
       gap: 32px;
     }
