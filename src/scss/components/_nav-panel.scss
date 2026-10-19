@@ -17,6 +17,13 @@
 //
 // 분기점: mq('desktop') 이상에서는 일반 메뉴로 펼쳐진다. JS의 desktopQuery와 같아야 한다.
 // 사용법과 주의점: doc/nav-panel.md
+//
+// 관계: 틀(.c-nav-panel)은 fixed + inset 0이라 뷰포트 전체를 덮는다.
+//       (조상에 transform·filter·contain이 없어야 뷰포트 기준이 유지된다. 현재 .c-header에는 없다.)
+//       __inner는 틀 높이 이상(min-block-size: 100%)이고, translateX(100%)는 __inner 자신의 너비만큼 오른쪽으로 민다.
+// 제한: __inner가 뷰포트보다 높아지면 틀이 세로로 스크롤된다. 화면 밖으로 밀린 부분은 틀의 overflow-x로 잘린다.
+// 전환: 닫힘 → .is-open(JS)으로 열림. 데스크톱(64em 이상)에서는 position·transform·visibility가 모두 기본값으로
+//       돌아가 헤더 안의 일반 flex 항목이 된다. 분기점을 넘으면 JS가 .is-resizing을 잠시 붙여 transition 없이 닫는다.
 // ------------------------------------------
 .c-nav-panel {
   // 틀은 화면 안에 고정하고 넘침만 자른다.

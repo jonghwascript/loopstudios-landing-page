@@ -1,4 +1,7 @@
 // 평소에는 화면 위로 숨겨 두고 키보드 포커스를 받으면 내려온다.
+// 관계: fixed라 뷰포트 왼쪽 위(1rem, 1rem) 기준이며 문서 흐름에 자리를 차지하지 않는다.
+// 제한: translateY의 −100%는 링크 자신의 높이 기준이다. top 1rem보다 2rem 더 올려 글자가 커져도 화면 위로 완전히 숨는다.
+// 전환: :focus일 때만 제자리(translateY(0))로 내려온다.
 .c-skip-link {
   position: fixed;
   top: 1rem;

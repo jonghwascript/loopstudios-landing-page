@@ -14,7 +14,8 @@
   display: none !important;
 }
 
-// 메뉴가 열린 동안 본문 스크롤을 막는다. (src/js/main.js에서 body에 토글)
+// 메뉴가 열린 동안 본문 스크롤을 막는 용도.
+// 현재 src/js(main.js, components/nav-panel.js)와 HTML 어디에서도 이 클래스를 붙이지 않는다.
 .no-scroll {
   overflow: hidden;
 }
