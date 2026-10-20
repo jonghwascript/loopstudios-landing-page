@@ -12,14 +12,13 @@
   color: #000;
   text-decoration: underline;
   transform: translateY(calc(-100% - 2rem));
-  /* 요소가 나타나고 숨겨질 때 부드럽게 애니메이션 처리 */
   transition: transform 0.3s ease-out;
 
   &:focus {
     transform: translateY(0);
   }
 
-  /* 움직임 줄이기 설정이 켜진 경우 */
+  // 움직임 줄이기: 이동 애니메이션 없이 바로 나타난다
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }

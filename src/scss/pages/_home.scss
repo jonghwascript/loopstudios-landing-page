@@ -5,17 +5,11 @@
 // 여러 곳에서 재사용하는 스타일은 components/에 둔다.
 // 섹션이 늘어나면 pages/_<섹션>.scss로 나누고 style.scss에 @use를 추가한다.
 //
-// 페이지 전체 흐름 (index.html)
-//   header.c-header (absolute, 문서 흐름 밖) ─ 히어로 위에 겹친다
-//   div.c-container.l-stack ─ main.c-main.l-stack ─ section ×3 (hero, interactive, creations)
-//                           └ footer.c-footer
-// 관계: 섹션들은 l-stack(세로 flex)의 자식이라 기본적으로 body 폭만큼 늘어난다(align-items 기본값 stretch).
-//       가로 기준선은 모든 영역이 $max-width(1120px, 고정 px) 하나를 쓴다.
-//       - hero·interactive: l-content-grid 콘텐츠 열, --content-max를 $max-width로 지정
-//       - header·creations·footer: width 또는 padding으로 min(가용 폭, $max-width)
-// 제한: px라 루트 글꼴 크기를 바꿔도 최대 폭은 1120px 그대로다.
-//       좌우 최소 여백이 같은 화면 폭(태블릿 이상 80px)에서는 모든 영역의 왼쪽·오른쪽 끝이 일치한다.
-// 전환: 분기점은 mq() 믹스인 기준 tablet 48em(768px), desktop 64em(1024px). em이라 브라우저 기본 글꼴 크기를 따른다.
+// 관계: 헤더는 absolute로 히어로 위에 겹치고, 섹션·푸터는 l-stack 자식이라 body 폭만큼 늘어난다.
+//       모든 영역의 가로 기준선은 $max-width 하나다. hero·interactive는 l-content-grid의 --content-max,
+//       header·creations·footer는 width나 padding으로 맞춘다.
+// 제한: 최대 폭이 px라 루트 글꼴 크기를 바꿔도 1120px 그대로다. 태블릿 이상은 좌우 최소 여백도 모두 80px라 양 끝이 맞는다.
+// 전환: mq() 기준 tablet 48em(768px), desktop 64em(1024px). em이라 브라우저 기본 글꼴 크기를 따른다.
 // ------------------------------------------
 $max-width: 1120px; //데스크탑에서 컨텐츠 최대폭
 $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
@@ -23,50 +17,44 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 // ------------------------------------------
 // Header
 // ------------------------------------------
-// 관계: 위치가 지정된 조상이 없어 초기 컨테이닝 블록(첫 화면 크기, 페이지와 함께 스크롤)을 기준으로 배치된다.
-//       left·right를 함께 주므로 너비는 "뷰포트 − 좌우 inset"이다. 문서 흐름에서 빠져 아래 히어로와 겹친다.
-//       l-cluster(flex, wrap) 안에서 space-between으로 첫 항목(로고)은 왼쪽, 마지막 항목은 오른쪽 끝에 붙는다.
-//       - 모바일·태블릿: 로고 ↔ 햄버거 버튼 (nav는 fixed라 flex 배치에서 빠짐)
-//       - 데스크톱: 로고 ↔ nav (버튼은 display: none, nav는 static으로 돌아와 flex 항목이 됨)
-// 제한: 로고·버튼·메뉴 너비 + gap(1rem)이 헤더 너비를 넘으면 마지막 항목이 다음 줄로 넘어간다.
-//       줄에 항목이 하나뿐이면 space-between은 시작 정렬과 같아 왼쪽에 붙는다.
-// 전환: 모바일 inset 40px 24px → 태블릿 좌우 80px → 데스크톱 위 64px, 폭 min(100% − 160px, 1120px)
-//       데스크톱에서는 left·right·width가 모두 정해지고 margin이 auto라, 남는 폭을 좌우 margin이 나눠 가운데 정렬된다.
-//       → 뷰포트 1280px 이하: 너비 = 뷰포트 − 160px. 1280px 초과: 1120px 고정, 가운데 정렬.
+// 관계: 위치 지정 조상이 없어 초기 컨테이닝 블록(첫 화면 크기) 기준으로 놓이고, 문서 흐름 밖이라 히어로 위에 겹친다.
+//       l-cluster의 space-between으로 로고는 왼쪽, 마지막 항목은 오른쪽 끝에 붙는다.
+//       마지막 항목은 모바일·태블릿에서 햄버거 버튼(nav는 fixed라 배치에서 빠짐), 데스크톱에서 nav다.
+// 제한: 항목 너비 + gap(1rem)이 헤더 너비를 넘으면 마지막 항목이 다음 줄로 넘어간다.
+// 전환: inset 모바일 40px 24px → 태블릿 좌우 80px → 데스크톱 위 64px. 데스크톱은 너비 min(100% − 160px, 1120px)에
+//       margin auto라, 1120px에 닿으면 남는 폭을 좌우 margin이 나눠 가운데 정렬된다.
 .c-header {
-  position: absolute; //image-hero.jpg 가 아래에 보여야함
-  inset: 40px 24px auto; //위 40px, 좌우 24px, 아래 auto(높이는 내용)
-  justify-content: space-between; //로고와 햄버거 버튼의 위치(데스크탑은 바뀌어야함)
+  position: absolute;
+  inset: 40px 24px auto;
+  justify-content: space-between;
   align-items: center;
   // 헤더가 DOM에서 먼저 나오므로, 뒤에 오는 위치 지정 요소(.c-hero__picture, .c-hero__text)가 위에 그려지지 않게 한다.
   // 이 z-index가 쌓임 맥락을 만들어 안쪽 fixed 메뉴 패널도 함께 히어로 위에 놓인다.
-  z-index: 999; //c-hero에 가려져서
+  z-index: 999;
 
   @include mq('tablet') {
-    inset: 40px 80px auto; //위 40px, 좌우 80px
+    inset: 40px 80px auto;
   }
 
   @include mq('desktop') {
-    inset: 64px 80px auto; //위 64px, 좌우 80px
-    width: min(100% - 160px, $max-width); // 헤더 좌우 위치값(80px × 2)을 뺀 폭
+    inset: 64px 80px auto;
+    width: min(100% - 160px, $max-width); // 160px = 좌우 inset 80px × 2
     margin: 0 auto;
   }
 
   // 관계: 헤더 로고와 메뉴 패널 안 로고가 같은 클래스를 쓴다.
   // 제한: 루트 16px 기준 144×24px ~ 192×32px. 이미지 비율(6:1)과 같아 찌그러지지 않는다.
-  // 전환: 375px 이하 최솟값, 768px 이상 최댓값, 그 사이는 vw에 따라 연속 변화(분기점 없음).
-  //       vw 부분은 루트 글꼴 크기와 무관하므로, 글꼴 크기를 바꾸면 최소·최대가 적용되는 화면 폭이 달라진다.
+  // 전환: 375px ~ 768px에서 vw에 따라 연속 변화한다. vw 부분은 루트 글꼴 크기와 무관해,
+  //       글꼴 크기를 바꾸면 최소·최대가 적용되는 화면 폭이 달라진다.
   &__logo {
     width: clamp(9rem, calc(6.137rem + 12.214vw), 12rem); //144 - 192px
     height: clamp(1.5rem, calc(1.023rem + 2.036vw), 2rem); //24 - 32px
   }
 
   &__button {
-    // 버튼과 링크를 쉽게 누를 수 있게
-    // 터치 영역 44×44px 이상: 패딩만큼 음수 마진을 줘서 아이콘 위치는 그대로 둔다
-    // 관계: flex 항목의 바깥 크기 = 아이콘 크기(패딩 +20/+28, 마진 −20/−28)라
-    //       space-between 배치와 헤더 줄 높이는 아이콘 크기로 계산된다.
-    // 제한: 모바일 아이콘 24×16px → 누르는 영역 44×44px. 768px 이상 32×21px → 52×49px.
+    // 관계: 패딩만큼 음수 마진을 줘서 바깥 크기는 아이콘 크기와 같다.
+    //       space-between 배치와 헤더 줄 높이는 아이콘 크기로 정해지고, 누르는 영역만 커진다.
+    // 제한: 누르는 영역 = 아이콘 + 20×28px(모바일 44×44px, 768px 이상 52×49px).
     padding: 14px 10px;
     margin: -14px -10px;
 
@@ -85,9 +73,8 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   }
 
   // 패널 동작·구조는 components/_nav-panel.scss (.c-nav-panel). 여기서는 겉모양만 정한다.
-  // 관계: 패널 안쪽 여백(40px 24px)은 모바일 헤더 inset(40px 24px)과 같은 값이라,
-  //       스크롤하지 않은 상태에서 패널 로고가 헤더 로고와 같은 자리에 온다.
-  // 제한: 태블릿에서는 헤더 좌우가 80px로 바뀌지만 이 값은 그대로라 두 로고 위치가 다르다.
+  // 관계: 패널 안쪽 여백(40px 24px)은 모바일 헤더 inset과 같아,
+  //       스크롤하지 않았을 때 패널 로고가 헤더 로고와 같은 자리에 온다. 태블릿 헤더 inset(80px)과는 다르다.
   &__navigation {
     --nav-panel-bg: #{$bg-black};
     --nav-panel-padding: 40px 24px;
@@ -96,11 +83,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 
 .c-navigation {
   // 관계: 메뉴 패널의 움직이는 부분(.c-nav-panel__inner)이자 l-stack.
-  //       자식은 [로고·닫기 줄(__inner), 링크 목록(__links)] 두 개이며 --space가 그 사이 간격이 된다.
-  // 전환: 모바일 159px → 태블릿 127px. 데스크톱에서는 __inner가 display: none이라 자식이 하나뿐이어서
-  //       간격이 적용되지 않는다(태블릿 값은 남아 있지만 효과 없음).
+  //       --space는 두 자식인 로고·닫기 줄(__inner)과 링크 목록(__list) 사이 간격이다.
+  // 전환: 모바일 159px → 태블릿 127px. 데스크톱은 __inner가 display: none이라 간격이 생기지 않는다.
   &__outer {
-    --space: 159px; // 로고 줄과 메뉴 목록 사이
+    --space: 159px;
 
     @include mq('tablet') {
       --space: 127px;
@@ -111,13 +97,13 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   &__inner {
     justify-content: space-between;
     @include mq('desktop') {
-      display: none;  //데스트탑에서 숨김
+      display: none;
     }
   }
 
   &__close-button {
-    // 터치 영역 44×44px 이상 (아이콘 위치 유지)
-    // 관계·제한: 바깥 크기는 아이콘 크기와 같고, 누르는 영역은 아이콘 + 26px(약 44 ~ 50px)
+    // 관계: 패딩만큼 음수 마진을 줘서 바깥 크기는 아이콘 크기와 같다.
+    // 제한: 누르는 영역 = 아이콘 + 26px(루트 16px 기준 약 44 ~ 50px).
     padding: 13px;
     margin: -13px;
 
@@ -136,11 +122,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     color: $bg-white;
   }
 
-  // 관계: 헤더 메뉴와 푸터 메뉴가 이 클래스를 함께 쓴다. 푸터 쪽 덮어쓰기는 .c-footer .c-navigation 참고.
-  //       l-stack이라 기본은 세로 쌓기, 간격 1.5rem.
-  // 전환: 데스크톱에서 가로 한 줄(row)로 바뀌고 gap을 1rem으로 직접 지정한다
-  //       (같은 명시도의 .l-stack gap보다 뒤에 선언되어 이긴다). 헤더 메뉴는 줄바꿈하지 않는다(nowrap).
-  &__links {
+  // 관계: 헤더 메뉴와 푸터 메뉴가 함께 쓴다(푸터 덮어쓰기는 .c-footer .c-navigation). l-stack이라 기본은 세로, 간격 1.5rem.
+  // 전환: 데스크톱에서 가로 한 줄, gap 1rem(같은 명시도의 .l-stack gap보다 뒤에 선언되어 이긴다).
+  //       flex-wrap이 기본값(nowrap)이라 헤더 메뉴는 줄바꿈하지 않는다.
+  &__list {
     --space: 1.5rem;
     margin: 0;
     padding: 0;
@@ -151,13 +136,14 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
+  // 관계: 글꼴·줄 높이는 항목(li)에 두고 링크(__link)가 물려받는다. li의 줄 높이가 메뉴 높이를 정한다.
   // 전환: 모바일·태블릿 패널 메뉴는 1.5rem 대문자, 데스크톱 가로 메뉴는 0.9375rem 일반 대소문자
-  &__link {
+  &__item {
     margin: 0;
     padding: 0;
     font-family: $font-family-title;
     font-size: $font-size-preset5;
-    text-transform: uppercase;  //모바일에서는 대문자
+    text-transform: uppercase;
     line-height: 100%;
     color: $bg-white;
 
@@ -166,20 +152,20 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
       font-size: $font-size-preset6;
       text-transform: none;
     }
+  }
 
-    a {
-      text-decoration: none;
-      color: $bg-white;
-      //접근성
-      &:hover,
-      &:focus-visible {
-        text-decoration: underline;
-        text-underline-offset: 0.5em; //8px;
-      }
-      &:focus-visible {
-        outline: 2px solid $bg-white;
-        outline-offset: 3px;
-      }
+  &__link {
+    text-decoration: none;
+    color: $bg-white;
+    //접근성
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 0.5em; //8px;
+    }
+    &:focus-visible {
+      outline: 2px solid $bg-white;
+      outline-offset: 3px;
     }
   }
 }
@@ -189,7 +175,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 // ------------------------------------------
 // 관계: l-stack의 자식은 main과 footer 두 개라, 이 값은 main 끝과 footer 시작 사이 간격이다.
 .c-container {
-  --space: 96px; //main과 footer 수직 간격
+  --space: 96px;
 }
 
 // ------------------------------------------
@@ -197,45 +183,33 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 // ------------------------------------------
 // 관계: l-stack의 자식인 세 섹션(hero, interactive, creations) 사이 간격. 모든 화면 폭에서 같다(별도 전환 없음).
 .c-main {
-  --space: 96px; //Section 간의 세로 간격
+  --space: 96px;
 }
 
 // ------------------------------------------
 // Hero Section
 // ------------------------------------------
-// 관계: l-content-grid의 3열 [여백 | 콘텐츠 | 여백] 위에 두 항목을 같은 행(1/-1 = 유일한 명시 행)에 겹친다.
-//       - __picture: data-full → full 열(섹션 전체 폭), 행 높이만큼 늘어남
-//       - __text: 기본 content 열 → 콘텐츠 열 안에서 위치
-//       여백 열 = minmax(--gutter-inline, 1fr), 콘텐츠 열 = min(섹션 폭 − 2 × gutter, 1120px). 섹션 폭 = body 폭.
-// 제한: 행 높이 = max(650px, 제목 높이 + 위아래 margin). 이미지는 contain: size로 행 높이 계산에서 빠진다.
-// 전환: gutter 모바일 var(--s1)=1.5rem → 태블릿 이상 80px.
-//       body 폭 1280px(1120 + 2 × 80) 이하에서는 콘텐츠 열이 줄고, 넘으면 1120px로 고정되어 가운데 정렬된다.
-//       두 항목 모두 행·열을 직접 지정하므로 자동 배치(grid-auto-flow)는 쓰이지 않는다.
+// 관계: l-content-grid의 [여백 | 콘텐츠 | 여백] 3열 위에서 __picture(full 열)와 __text(content 열)를 같은 행에 겹친다.
+// 제한: 행 높이는 최소 650px이고, 제목 높이 + 위아래 margin이 더 크면 늘어난다. 이미지는 행 높이 계산에서 빠진다.
+// 전환: gutter 모바일 1.5rem → 태블릿 이상 80px. 콘텐츠 열 = min(섹션 폭 − 2 × gutter, 1120px)이라
+//       섹션 폭이 넓어지면 1120px에서 멈추고 가운데 정렬된다.
 .c-hero {
   --content-max: #{$max-width}; // 헤더·작품 목록·푸터와 같은 최대 폭
 
   @include mq('tablet') {
     --gutter-inline: 80px;
   }
-  // 고정 650px → 최소 650px, 내용이 크면 늘어남
-  grid-template-rows: minmax(
-    $c-hero-height,
-    auto
-  ); // 모바일·태블릿·데스크탑 공통
+  grid-template-rows: minmax($c-hero-height, auto);
   position: relative;
 
   &__picture {
-    // 행 크기를 계산할 때 이미지 높이를 무시하게 함
-    // contain: size가 없으면 이미지 높이(너비 × 원본 비율)가 행을 키운다.
-    // 예: 모바일 원본 750×1300 → 375px 폭에서 650px, 768px 폭에서 약 1330px
-    // contain: size를 주면 이미지 크기를 무시하고 행 높이에 맞춰 늘어납니다.
+    // contain: size로 이미지 높이(너비 × 원본 비율)가 행을 키우지 않게 하고, 행 높이만큼 늘어나게 한다.
     contain: size;
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
     position: relative; // 오버레이 기준
 
-    // 이미지 위 검정 40% 채우기: 데스크톱만 적용
-    // - 모바일·태블릿: 시안대로 없음. 없어도 제목 대비 통과
-    // - 데스크톱: 시안에 없지만 흰 메뉴·제목 대비를 위해 적용 (ENGINEERING_NOTES 참고)
+    // 이미지 위 검정 40%: 흰 메뉴·제목 대비를 위해 데스크톱만 적용한다(시안에는 없음).
+    // 모바일·태블릿은 시안대로 없으며, 없어도 제목 대비를 통과한다.
     &::after {
       content: '';
       position: absolute;
@@ -254,11 +228,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
-  // 관계: 콘텐츠 열 안에서 내용 너비(fit-content)로 줄어들고 왼쪽(start)에 붙는다.
-  //       z-index 1로 같은 셀의 __picture 위에 그린다.
-  // 제한: 너비는 콘텐츠 열을 넘지 않으며, 긴 단어는 overflow-wrap: anywhere로 열 안에서 끊긴다.
-  //       위아래 margin은 행 높이 계산에 포함되므로, 제목이 커지면 겹치지 않고 행(히어로)이 늘어난다.
-  // 전환: 모바일·태블릿은 행 세로 가운데(center), 데스크톱은 행 아래쪽(end) + 너비 min(콘텐츠 열, 650px).
+  // 관계: 콘텐츠 열 안에서 내용 너비로 줄어 왼쪽에 붙고, z-index 1로 같은 셀의 __picture 위에 그린다.
+  // 제한: 너비는 콘텐츠 열을 넘지 않고 긴 단어는 열 안에서 끊긴다.
+  //       위아래 margin이 행 높이에 포함되어, 제목이 커지면 겹치지 않고 히어로가 늘어난다.
+  // 전환: 모바일·태블릿은 행 세로 가운데, 데스크톱은 행 아래쪽 + 너비 min(콘텐츠 열, 650px).
   //       글자 크기는 375px ~ 768px에서 40px → 72px로 연속 변화(루트 16px 기준).
   &__text {
     grid-row: 1 / -1; //이미지와 텍스트를 겹치게 보일려고
@@ -270,7 +243,11 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     padding-inline: 5px;
     font-family: $font-family-title;
     // 텍스트 200% 확대 / 가로 스크롤 없애기 (WCAG 1.4.4, 1.4.10)
-    font-size: clamp(2.5rem, calc(0.5916rem + 8.142vw), 4.5rem);  // 9.466px → 0.5916rem
+    font-size: clamp(
+      2.5rem,
+      calc(0.5916rem + 8.142vw),
+      4.5rem
+    ); // 9.466px → 0.5916rem
     text-transform: uppercase;
     line-height: 100%;
     color: $bg-white;
@@ -279,10 +256,9 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     overflow-wrap: anywhere; // 들어가지 않는 단어는 중간에서 줄바꿈
     hyphens: auto; // 지원하는 브라우저에서는 하이픈 표시 (lang="en" 필요)
 
-    // 헤더(absolute, top 40px) 아래 공간을 위아래 같은 크기로 확보한다.
-    // 100%에서는 행(650px) 안에 여유가 있어 가운데 위치가 그대로이고,
-    // 글자를 키우면 제목이 헤더 아래로 밀려 겹치지 않는다. rem이라 헤더와 함께 커진다.
-    // 수식: 행 높이 ≥ 제목 높이 + 2 × (40px + 4rem). 루트 16px이면 제목 높이 442px까지 행은 650px 그대로다.
+    // 위아래 margin = 헤더 top 40px + 헤더 공간 4rem. 위아래가 같아 가운데 위치는 그대로다.
+    // 4rem = 헤더 최대 높이 2rem(로고 높이, 햄버거는 음수 마진이라 영향 없음) + 여백 2rem의 어림값.
+    // rem이라 글자를 키우면 함께 커져 제목이 헤더와 겹치지 않는다. 로고 높이를 바꾸면 함께 확인한다.
     margin-block: calc(40px + 4rem);
 
     // 전환: 375px(23.4375em) 이상에서 좌우 패딩 5px → 24px
@@ -296,11 +272,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
 
     @include mq('desktop') {
-      // absolute로 띄우면 행 높이 계산에서 빠져, 글자를 키우면 제목이 히어로 위로 잘린다.
-      // 그리드 안에서 아래쪽에 붙이면 제목이 커질 때 히어로 행(minmax)이 함께 늘어난다.
-      // 수식: 행 높이 ≥ 제목 높이 + (64px + 4rem) + 146px
+      // absolute가 아니라 그리드 안에서 아래쪽에 붙여, 제목이 커지면 히어로 행이 함께 늘어나게 한다.
+      // absolute로 띄우면 행 높이 계산에서 빠져 제목이 히어로 위로 잘린다.
       align-self: end;
-      margin-block: calc(64px + 4rem) 146px; // 위: 데스크톱 헤더 top 64px + 헤더 공간
+      margin-block: calc(64px + 4rem) 146px; // 위: 데스크톱 헤더 top 64px + 헤더 공간(4rem, 근거는 위 모바일 규칙)
       width: min(100%, 650px); // 100% = 콘텐츠 열 너비
       padding-block: 42px;
       padding-inline: 40px;
@@ -312,13 +287,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 // ------------------------------------------
 // Interactive Section
 // ------------------------------------------
-// 관계: l-content-grid라 두 자식(__picture, __text)은 기본으로 콘텐츠 열에 들어간다.
-// 전환:
-//   - 모바일·태블릿: 자동 배치로 이미지 행 → 글 행 순서로 세로로 쌓인다.
-//   - 데스크톱: 두 자식을 같은 셀(콘텐츠 열 2/3, 1행)에 겹친다.
-//     이미지는 셀의 왼쪽 위, 글 상자는 셀의 오른쪽 아래(end/end)에 놓여 가운데 부분이 겹친다.
-//     행 높이 = max(이미지 높이, 글 상자 높이). 1024px 근처처럼 글 상자가 더 높으면 행이 늘어나 이미지 아래가 빈다.
-//   gutter 모바일 1.5rem → 태블릿 이상 80px. 콘텐츠 열 최대 1120px(히어로와 같음)
+// 관계: l-content-grid라 두 자식(__picture, __text)은 콘텐츠 열(최대 1120px, 히어로와 같음)에 들어간다.
+// 제한: 데스크톱 행 높이 = max(이미지 높이, 글 상자 높이). 제목이 여러 줄로 늘어 글 상자가 더 높으면 이미지 아래가 빈다.
+// 전환: 모바일·태블릿은 이미지 → 글 순서로 세로로 쌓인다. 데스크톱은 두 자식을 같은 셀에 겹쳐
+//       이미지는 왼쪽 위, 글 상자는 오른쪽 아래에 놓는다. gutter는 모바일 1.5rem → 태블릿 이상 80px.
 .c-interactive {
   --content-max: #{$max-width}; // 헤더·작품 목록·푸터와 같은 최대 폭
 
@@ -334,9 +306,8 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
-  // 관계: picture 폭(= 콘텐츠 열)을 기준으로 너비를 정하고, 높이는 원본 비율을 따른다.
-  // 제한: 데스크톱 너비 = 콘텐츠 열의 65.2679%(= 731 / 1120). 데스크톱 원본 폭이 731px이라
-  //       콘텐츠 열이 최대(1120px)일 때 원본 크기와 같고, 그보다 좁으면 비율대로 줄어든다.
+  // 관계: 너비는 picture 폭(= 콘텐츠 열) 기준이고, 높이는 원본 비율을 따른다.
+  // 제한: 데스크톱 너비 = 콘텐츠 열의 65.2679%(731 / 1120). 열이 최대일 때 원본 폭 731px과 같고, 좁으면 비율대로 줄어든다.
   //       height가 auto라 object-fit(cover·contain)은 잘라내거나 여백을 만들지 않는다.
   &__image {
     width: 100%;
@@ -349,9 +320,9 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
-  // 관계: 데스크톱에서 셀 오른쪽 아래에 붙는 글 상자. 내용 너비(fit-content)로 줄어든다.
-  // 제한: 데스크톱 최대 너비 = 콘텐츠 열의 48.3036%(= 541 / 1120, 최대 541px). 이미지(65.27%)와 가로로 약 13.57% 겹친다.
-  //       긴 단어는 overflow-wrap: anywhere로 상자 안에서 끊긴다.
+  // 관계: 데스크톱에서 셀 오른쪽 아래에 붙는 글 상자로, 내용 너비로 줄어든다.
+  // 제한: 데스크톱 최대 너비 = 콘텐츠 열의 48.3036%(541 / 1120)라 이미지(65.2679%)와 가로로 겹친다.
+  //       긴 단어는 상자 안에서 끊긴다.
   &__text {
     //grid 아이템이라 l-stack 레이아웃 사용하지 않음
     margin-block-start: 48px;
@@ -360,25 +331,23 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
       // 데스크탑에서는 겹쳐서 보이게
       grid-column: 2 / 3;
       grid-row: 1 /2;
+      margin-block-start: 0; // 쌓을 때의 간격이 행 높이를 키워 이미지 아래가 비지 않게
       align-self: end;
       justify-self: end;
-      max-width: 48.3036%;  //(541 / 1120) * 100%
+      max-width: 48.3036%; //(541 / 1120) * 100%
     }
   }
 
-  // 관계: l-stack이라 --space가 제목과 설명 사이 간격이 된다.
-  // 전환: 간격은 375px ~ 768px에서 16px → 32px로 연속 변화.
-  //       데스크톱에서만 흰 배경과 위·왼쪽 패딩이 생겨 이미지 위에 겹치는 상자가 된다.
-  //       위 패딩: 5.05vw, 최소 48px(뷰포트 약 951px 이하) ~ 최대 97px(약 1921px 이상)
-  //       왼쪽 패딩: 5vw, 최소 48px(960px 이하) ~ 최대 96px(1920px 이상)
-  //       → 데스크톱(1024px 이상)에서는 최솟값이 적용되지 않고 vw에 따라 커진다(루트 16px 기준).
+  // 관계: l-stack이라 --space가 제목과 설명 사이 간격이다(375px ~ 768px에서 16px → 32px로 연속 변화).
+  // 전환: 데스크톱에서만 흰 배경과 위·왼쪽 패딩이 생겨 이미지 위에 겹치는 상자가 된다.
+  //       패딩은 화면 폭(vw)에 비례하고 위 48 ~ 97px, 왼쪽 48 ~ 96px로 제한된다(루트 16px 기준).
+  //       데스크톱 폭(1024px 이상)에서는 최솟값에 닿지 않는다.
   &__text-wrapper {
     --space: clamp(1rem, calc(0.046rem + 4.071vw), 2rem); //16 ~ 32px
     @include mq('desktop') {
       background-color: $bg-white;
-      // 1024 화면에서 패딩값이 커서 아래로 내려온다.
-      padding-block-start: clamp(3rem, 5.05vw, 6.0625rem);   //48px ~ 97px
-      padding-inline-start: clamp(3rem, 5vw, 6rem);     //48px ~ 96px
+      padding-block-start: clamp(3rem, 5.05vw, 6.0625rem); //48px ~ 97px
+      padding-inline-start: clamp(3rem, 5vw, 6rem); //48px ~ 96px
     }
   }
 
@@ -389,7 +358,7 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     line-height: 100%;
     text-align: center;
     text-transform: uppercase;
-    //화면글꼴을 200% 했을때 줄바꿈 처리
+    // 여러 줄로 나뉘면(글꼴 200% 등) 줄 길이를 고르게 맞춘다
     text-wrap: balance;
   }
 
@@ -404,19 +373,11 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 // ------------------------------------------
 // Creations Section
 // ------------------------------------------
-// 관계: l-content-grid가 아닌 자체 그리드. 좌우 여백은 섹션 padding으로 만든다.
-//       자식 세 개: 제목(h2) · 목록(ul) · See all 링크(a)
-// 전환:
-//   - 모바일·태블릿: 1열, DOM 순서대로 제목 → 목록 → 링크 세 행
-//   - 데스크톱: 4열 그리드에 영역 이름으로 배치. 제목(1~2열, 왼쪽) · 링크(3~4열, 오른쪽) / 목록(1~4열)
-//     grid-template-rows의 세 번째 행은 남지만 비어 있어 높이 0이다.
-// 제한: 섹션은 l-stack(main)의 자식이라 body 폭만큼 늘어난다. 콘텐츠 영역은 좌우 padding으로 정한다.
-//       데스크톱 콘텐츠 영역 = min(body 폭 − 160px, 1120px) → 헤더·푸터와 같은 기준선
-// 전환: padding-inline 모바일 24px → 태블릿 80px → 데스크톱 max(80px, (100% − 1120px) / 2)
-//       데스크톱 padding의 %는 섹션의 부모(main) 너비 = body 폭 기준이다.
-//       → body 폭 1280px 이하: 좌우 80px 고정, 콘텐츠 영역이 줄어든다.
-//       → 1280px 초과: 콘텐츠 영역 1120px 고정, 남는 폭을 좌우 padding이 반씩 나눠 가운데 정렬된다.
-//       margin-inline: auto를 쓰면 flex 자식이 늘어나지 않고 내용 너비(이미지 원본 폭에 따라 달라짐)가 되므로 쓰지 않는다.
+// 관계: l-content-grid가 아닌 자체 그리드. 자식은 제목(h2) · 목록(ul) · See all 링크(a)이고, 좌우 여백은 섹션 padding이다.
+// 제한: 섹션은 l-stack(main) 자식이라 body 폭만큼 늘어난다. 데스크톱 콘텐츠 영역 = min(body 폭 − 160px, 1120px)라
+//       헤더·푸터와 기준선이 같다.
+// 전환: 모바일·태블릿은 1열에 제목 → 목록 → 링크. 데스크톱은 4열에 영역 이름으로 [제목 | 링크] / [목록] 배치한다
+//       (세 번째 행은 비어 있어 높이 0). padding-inline은 24px → 태블릿 80px → 데스크톱 max(80px, (100% − 1120px) / 2).
 .c-creations {
   padding-inline: 24px;
   display: grid;
@@ -427,7 +388,8 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   }
 
   @include mq('desktop') {
-    // 콘텐츠 영역 최대 1120px: 넓은 화면에서 남는 폭을 좌우 여백이 반씩 갖는다(최소 80px).
+    // %는 부모(main) 너비 = body 폭 기준. 넓은 화면에서는 남는 폭을 좌우 padding이 반씩 갖는다.
+    // margin-inline: auto로 가운데 두면 flex 자식이 늘어나지 않고 내용 너비가 되므로 padding을 쓴다.
     padding-inline: max(80px, (100% - #{$max-width}) / 2);
     // 카드 크기인 256px로 지정하면 화면 넓이를 100% 차지 하지 못한다.
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -488,14 +450,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
-  // 관계: l-grid이지만 같은 명시도의 grid-template-columns를 뒤에서 직접 지정하므로
-  //       l-grid의 auto-fit 자동 열 배치는 쓰이지 않는다. 간격은 l-grid의 1rem(모바일)을 쓴다.
-  // 전환:
-  //   - 모바일: 1열, 행 높이는 카드 내용(이미지 120px)
-  //   - 태블릿: 1열, 8행 × 120px 고정, 행 간격 24px
-  //   - 데스크톱: 4열(minmax(0, 1fr) → 열 너비 = (목록 폭 − 3 × 32px) / 4) × 2행 450px 고정, 간격 32px
-  // 제한: 데스크톱 목록 폭 = 섹션 콘텐츠 영역(최대 1120px, 섹션 padding이 제한)이라 제목·See all과 양 끝이 맞는다.
-  //       행 높이가 고정이라 카드 내용이 커져도 늘어나지 않는다.
+  // 관계: l-grid지만 grid-template-columns를 뒤에서 직접 지정해 auto-fit 자동 열 배치는 쓰이지 않는다.
+  //       목록 폭은 섹션 콘텐츠 영역과 같아 제목·See all과 양 끝이 맞는다.
+  // 제한: 태블릿·데스크톱은 행 높이가 고정(120px, 450px)이라 카드 내용이 커져도 늘어나지 않는다.
+  // 전환: 모바일 1열, 간격 1rem(l-grid) → 태블릿 1열 × 8행, 행 간격 24px → 데스크톱 4열 × 2행, 간격 32px.
   &__list {
     margin-block-start: 32px;
     grid-template-columns: 1fr;
@@ -519,12 +477,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   &__item {
     position: relative;
 
-    // 밝은 이미지 위 흰 제목의 대비를 위한 아래쪽 어두운 그라데이션
-    // 카드 높이가 120px인 모바일·태블릿은 제목이 그라데이션 중간에 걸려
-    // $bg-gradient로는 Night Arcade가 4.5:1 미만이라 더 진하게 한다.
-    // 관계: inset 0으로 카드 전체를 덮는다. 그라데이션 위치는 카드 높이가 아니라 em(글자 크기) 기준이다.
-    // 제한: 루트 16px에서 아래부터 75px(5em)까지 진하고 120px(8em)에서 투명해진다.
-    // 전환: 데스크톱에서는 카드 높이(450px) 비율 기준인 $bg-gradient로 바뀐다.
+    // 관계: 카드 전체를 덮는 아래쪽 어두운 그라데이션으로, 밝은 이미지 위 흰 제목의 대비를 높인다.
+    // 제한: 모바일·태블릿은 카드 높이가 아니라 em(제목 글자 크기) 기준이다. 아래 5em까지 진하고 8em에서 투명해진다.
+    //       카드가 120px라 $bg-gradient로는 Night Arcade 제목 대비가 4.5:1 미만이어서 더 진하게 한다.
+    // 전환: 데스크톱은 카드 높이(450px) 비율 기준인 $bg-gradient로 바뀐다.
     &::after {
       font-size: $font-size-preset6; // 그라데이션 길이를 제목 글자 크기에 맞춤
       content: '';
@@ -579,9 +535,9 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
-  // 관계: 카드(li) 왼쪽 아래 모서리에서 20px 안쪽에 고정. left만 지정해 내용 너비로 줄어든다.
+  // 관계: 카드(li) 왼쪽 아래 모서리에서 20px 안쪽에 붙는다. left만 지정해 내용 너비로 줄어든다.
   //       span이 블록이라 단어 묶음마다 한 줄씩 두 줄이 된다.
-  // 제한: 아래를 기준으로 하므로 글자가 커지면 위로 자란다. 카드에 overflow 제한이 없어 카드 밖으로 넘칠 수 있다.
+  // 제한: 아래 기준이라 글자가 커지면 위로 자란다.
   &__card-title {
     position: absolute;
     z-index: 1; // 그라데이션(::after) 위에 표시
@@ -613,12 +569,9 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   }
 
   // 관계: 자식 네 개(로고 · 메뉴 nav · 소셜 목록 · 저작권 문구)를 배치하는 그리드
-  // 전환:
-  //   - 모바일: 1열, DOM 순서(로고 → 메뉴 → 소셜 → 저작권)로 세로 쌓기, 가운데 정렬
-  //   - 태블릿: 2 × 2 영역. 왼쪽 열 = 로고·메뉴, 오른쪽 열 = 소셜·저작권(오른쪽 정렬)
-  //     DOM에서는 메뉴가 소셜보다 앞이지만 화면에서는 소셜이 위 행에 온다.
-  //   - 데스크톱: 너비 min(푸터 콘텐츠 폭, 1120px), 가운데 정렬
   // 제한: auto 열은 내용 너비를 먼저 갖고 남는 공간을 나눠 가진다. 공간이 부족하면 최소 내용 너비까지 줄어든다.
+  // 전환: 모바일은 1열에 DOM 순서로 쌓는다. 태블릿은 2 × 2 영역(왼쪽: 로고·메뉴, 오른쪽: 소셜·저작권)이며
+  //       DOM과 달리 소셜이 메뉴보다 위 행에 온다. 데스크톱은 너비 min(푸터 콘텐츠 폭, 1120px)으로 가운데 정렬한다.
   &__outer {
     display: grid;
     grid-template-columns: 1fr;
@@ -633,16 +586,15 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
         'navigations copyright';
       row-gap: 24px;
 
+      // .c-footer__logo · __social · __navigations · __copyright에 같은 이름의 grid-area를 준다
       @each $grid in [logo, social, navigations, copyright] {
         .c-footer__#{$grid} {
           grid-area: $grid;
         }
       }
     }
-    @include mq('desktop') {
-      width: min(100%, $max-width);
-      margin-inline: auto;
-    }
+    width: min(100%, $max-width); // padding 안쪽 폭, 넓은 화면에서는 1120px에서 멈춘다
+    margin-inline: auto;
   }
 
   &__logo {
@@ -655,7 +607,6 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
 
   // 관계: 태블릿 이상에서 navigations 영역(왼쪽 아래 칸)의 왼쪽에 내용 너비로 붙는다.
   // 제한: 세로는 그리드 항목 기본값(stretch)으로 행 높이만큼 늘어나고 내용은 위에서 시작한다.
-  //       세로 가운데 정렬이 필요하면 nav 자체가 아니라 그리드 항목 정렬(align-self)로 지정해야 한다.
   &__navigations {
     margin-block-start: 40px;
     @include mq('tablet') {
@@ -667,43 +618,43 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
   &__social {
     margin-block-start: 40px;
 
-    // 터치 영역: 아이콘 간격이 16px라 가로는 겹치지 않는 40px, 세로는 44px.
-    // 음수 마진으로 아이콘 위치와 간격은 그대로 둔다(아이콘 24px 기준).
-    // 관계: 링크 바깥 크기 = 40 − 16 = 24px, 44 − 20 = 24px라 l-cluster(gap 1rem)는 아이콘 크기로 배치한다.
-    a {
-      display: grid;
-      place-items: center;
-      inline-size: 40px;
-      block-size: 44px;
-      margin: -10px -8px;
-      position: relative;
-
-      //글자가 없어서 text-underline-offset으로 그릴수 없다
-      &::after {
-        content: '';
-        position: absolute;
-        inset-inline: 8px; // 아이콘 폭(24px)에 맞춤
-        inset-block-end: 2px; // 아이콘 아래 간격, 시안에 맞게 조정
-        block-size: 2px;
-        background-color: $bg-white;
-        opacity: 0;
-      }
-
-      &:hover::after,
-      &:focus-visible::after {
-        opacity: 1;
-      }
-    }
-
     @include mq('tablet') {
       margin-block-start: 0;
       justify-self: end;
     }
   }
 
+  // 터치 영역: 아이콘 간격이 16px라 가로는 겹치지 않는 40px, 세로는 44px.
+  // 음수 마진으로 아이콘 위치와 간격은 그대로 둔다(아이콘 24px 기준).
+  // 관계: 링크 바깥 크기 = 40 − 16 = 24px, 44 − 20 = 24px라 l-cluster(gap 1rem)는 아이콘 크기로 배치한다.
+  &__social-link {
+    display: grid;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 44px;
+    margin: -10px -8px;
+    position: relative;
+
+    //글자가 없어서 text-underline-offset으로 그릴수 없다
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 8px; // 아이콘 폭(24px)에 맞춤
+      inset-block-end: 2px; // 아이콘 아래 간격, 시안에 맞게 조정
+      block-size: 2px;
+      background-color: $bg-white;
+      opacity: 0;
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      opacity: 1;
+    }
+  }
+
   // 관계: 태블릿 이상에서 copyright 영역(오른쪽 아래 칸)의 오른쪽에 내용 너비로 붙는다.
   // 제한: 세로는 navigations와 같은 행에서 stretch, 글자는 위에서 시작한다.
-  //       text-align: center는 태블릿 이상에서도 남지만, justify-self: end로 내용 너비가 되어 보이는 차이는 줄바꿈될 때만 생긴다.
+  //       태블릿 이상에서도 text-align: center가 남지만, 내용 너비라 줄바꿈될 때만 차이가 보인다.
   &__copyright {
     margin-block-start: 16px;
     font-family: $font-family-body;
@@ -718,11 +669,11 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
     }
   }
 
-  // 관계: 헤더 메뉴의 .c-navigation__links·__link 규칙을 함께 받고, 명시도(0,2,0 이상)로 필요한 값만 덮어쓴다.
+  // 관계: 헤더 메뉴의 .c-navigation__list·__item·__link 규칙을 함께 받고, 명시도(0,2,0 이상)로 필요한 값만 덮어쓴다.
   // 전환: 모바일은 세로 쌓기(가운데 정렬, 간격 1rem) → 태블릿부터 가로 배치 + 줄바꿈 허용.
   //       데스크톱에서는 헤더용 규칙(row, gap 1rem)이 함께 적용되지만 값이 같아 결과가 바뀌지 않는다.
   .c-navigation {
-    &__links {
+    &__list {
       --space: 1rem;
       align-items: center;
       @include mq('tablet') {
@@ -731,12 +682,10 @@ $c-hero-height: 650px; // hero 최소 높이 (글자가 커지면 늘어남)
       }
     }
     &__link {
-      a {
-        font-family: $font-family-body;
-        font-size: $font-size-preset6;
-        color: $bg-white;
-        text-transform: none;
-      }
+      font-family: $font-family-body;
+      font-size: $font-size-preset6;
+      color: $bg-white;
+      text-transform: none;
     }
   }
 }
