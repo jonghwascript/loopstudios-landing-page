@@ -1,0 +1,87 @@
+@use '../abstracts' as *;
+
+// ------------------------------------------
+// 모바일 메뉴 패널 (js/components/nav-panel.js와 함께 쓴다)
+// 이 파일은 동작에 필요한 구조만 담는다. 겉모양은 아래 사용자 정의 속성과 프로젝트 스타일로 정한다.
+// 마크업 구조·사용법·주의점: doc/nav-panel.md
+//
+// 사용자 정의 속성 (기본값)
+//   --nav-panel-bg: #000                 패널 배경 (움직이는 __inner에 칠한다)
+//   --nav-panel-padding: 40px 24px       패널 안쪽 여백
+//   --nav-panel-duration: 0.3s           슬라이드 시간
+//
+// 관계: 틀(.c-nav-panel)은 fixed + inset 0이라 뷰포트를 덮는다(조상에 transform·filter·contain이 없을 때).
+//       움직이는 __inner는 틀 높이 이상이고, translateX(100%)는 __inner 자신의 너비만큼 오른쪽으로 민다.
+// 제한: __inner가 뷰포트보다 높으면 틀이 세로로 스크롤되고, 화면 밖으로 밀린 부분은 틀의 overflow-x로 잘린다.
+// 전환: .is-open(JS)으로 열린다. mq('desktop') 이상에서는 위치·이동·숨김이 기본값으로 돌아가 헤더의 일반 flex 항목이 된다.
+//       이 분기점은 JS의 desktopQuery와 같아야 하며, 넘을 때 JS가 .is-resizing을 잠시 붙여 transition 없이 닫는다.
+// ------------------------------------------
+.c-nav-panel {
+  // 틀은 화면 안에 고정하고 넘침만 자른다.
+  // 틀 자체를 화면 밖으로 옮기면 fixed 요소도 스크롤 영역에 포함되어 가로 스크롤이 생긴다.
+  position: fixed;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto; // 가로 모드처럼 낮은 화면에서 메뉴 끝까지 스크롤
+  visibility: hidden; // 닫힘: 키보드·스크린 리더 접근 차단
+  // 닫을 때: 슬라이드가 끝난 뒤 숨긴다
+  transition: visibility 0s linear var(--nav-panel-duration, 0.3s);
+
+  &.is-open {
+    visibility: visible;
+    // 열 때: 지연 없이 보여야 JS가 닫기 버튼에 포커스를 줄 수 있다
+    transition-delay: 0s;
+  }
+
+  &__inner {
+    min-block-size: 100%;
+    padding: var(--nav-panel-padding, 40px 24px);
+    // 배경과 여백은 움직이는 쪽에 둔다. 틀에 두면 여백으로 뒤 페이지가 비쳐 보인다.
+    background-color: var(--nav-panel-bg, #000);
+    transform: translateX(100%);
+    transition: transform var(--nav-panel-duration, 0.3s) ease-out;
+  }
+
+  &.is-open &__inner {
+    transform: none;
+  }
+
+  // 분기점을 넘을 때는 슬라이드 없이 바로 바뀌게 한다 (JS가 잠시 붙였다 뗀다)
+  &.is-resizing,
+  &.is-resizing &__inner {
+    transition: none;
+  }
+
+  // 움직임 줄이기: 슬라이드 없이 바로 열고 닫는다 (숨김 지연도 없앤다)
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &__inner {
+      transition: none;
+    }
+  }
+
+  // 데스크톱: 패널이 아니라 일반 메뉴로 펼친다. 틀과 움직이는 부분을 모두 되돌려야 한다.
+  @include mq('desktop') {
+    position: static;
+    overflow: visible;
+    visibility: visible;
+
+    &__inner {
+      min-block-size: auto;
+      padding: 0;
+      background-color: transparent;
+      transform: none;
+    }
+
+    // 펼쳐진 메뉴에서는 할 일이 없는 버튼이라 숨긴다 (Tab 순서에서도 빠짐)
+    &__close {
+      display: none;
+    }
+  }
+}
+
+.c-nav-panel-toggle {
+  @include mq('desktop') {
+    display: none;
+  }
+}
